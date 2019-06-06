@@ -1,0 +1,207 @@
+#!/usr/bin/env node
+var bodyParser = require('body-parser');
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var pg = require('pg');
+var config = {
+    user: 'postgres',
+    database: 'coyome_db',
+    password: '123',
+    host: 'localhost',
+    port: 5432,
+    max: 10,
+    idleTimeoutMillis: 30000
+};
+var pool = new pg.Pool(config)
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('coyome-v1:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Socket IO
+ */
+
+var io = require("socket.io")(server);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+//testing socket
+io.on("connection",function(socket){
+  console.log('Incomming connect');
+  console.log(socket.id);
+  socket.on('Client-id',function(data){
+    pool.connect(function(err, client, done){
+      if(err) throw err;
+      // client.query('LISTEN events');  
+      client.query("SELECT * FROM users WHERE id ='"+data+"'",function(err,check){
+        done();
+        if(err) throw err;
+          var checking = check.rows[0];
+          var send = "Greeting Moderator! Moderator   "+checking.hoten+"   has been access!!!";
+          var testsend = "Moderator!  "+checking.hoten+"  has been access";
+          io.sockets.emit('server-check',send);
+          io.sockets.emit('server-send',testsend);
+      })
+  })
+});
+  console.log('LISTEN events');
+    pool.connect(function(err, client, done){
+      if(err) throw err;
+      client.query('LISTEN events');
+      client.on('notification',function(data){
+        var obj = JSON.parse(data.payload);
+        socket.emit('obj-noti',obj);
+      })
+    });
+        socket.on('insert-noti',function(data){
+          pool.connect(function(err, client, done){
+            if(err) throw err;
+          client.query("SELECT * FROM users WHERE id="+data.id_user+" LIMIT 1",function(err, result){
+            if(err) throw err;
+                  client.query("SELECT * FROM chude WHERE id="+data.id_chude+"LIMIT 1",function(err,result2){
+                    done();
+                    if(err) throw err;
+                  var result1 = result.rows[0].hoten;
+                  var reuslt3 = result2.rows[0].ten_cd;
+                  var send = {
+                          hoten: result1,
+                          chude: reuslt3,
+                          tieude: data.tieude
+                        }
+                    socket.emit('test-user-insert',send);
+                  })
+                })
+              })
+            });
+
+          socket.on('update-noti-dx',function(data){
+          pool.connect(function(err, client, done){
+              if(err) throw err;
+          client.query("SELECT * FROM users WHERE id="+data.id_user+" LIMIT 1",function(err, result){
+            if(err) throw err;
+                  client.query("SELECT * FROM chude WHERE id="+data.id_chude+"LIMIT 1",function(err,result2){
+                    done();
+                    if(err) throw err;
+                  var result1 = result.rows[0].hoten;
+                  var reuslt3 = result2.rows[0].ten_cd;
+                  var send = {
+                          hoten: result1,
+                          chude: reuslt3,
+                          tieude: data.tieude
+                        }
+                    socket.emit('test-user-update',send);
+                  })
+                })
+              })
+            });
+            socket.on('update-noti',function(data){
+              pool.connect(function(err, client, done){
+                  if(err) throw err;
+                client.query("SELECT * FROM users WHERE id="+data.id_user+" LIMIT 1",function(err, result){
+                  if(err) throw err;
+                        client.query("SELECT * FROM chude WHERE id="+data.id_chude+"LIMIT 1",function(err,result2){                         
+                          if(err) throw err;
+                          client.query("SELECT * FROM users WHERE id="+data.id_duyetbai+"LIMIT 1",function(err,result4){
+                            done();
+                            if(err) throw err;
+                        var result1 = result.rows[0].hoten;
+                        var reuslt3 = result2.rows[0].ten_cd;
+                        var result5 = result4.rows[0].hoten;
+                        var send = {
+                                hoten: result1,
+                                chude: reuslt3,
+                                tieude: data.tieude,
+                                duyetbai: result5,
+                                tq_dc: data.restrict_area
+                              }
+                          socket.emit('test-user-update-duyetbai',send);
+                        })
+                      })
+                    })
+                  })
+                });
+              
+
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

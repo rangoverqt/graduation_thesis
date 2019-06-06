@@ -1,0 +1,695 @@
+<html>
+    <head>
+            <title>Trang chi tiết chủ đề Admin</title>
+            <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+      <link rel='stylesheet' href='/css/style.css' />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+    <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+    <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+    <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+    </head>
+    <body>
+            <div class="container-fluid">
+                    <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                        <h4 style="float:none">Admin Dashboard</h4>
+                        <ul>
+                            <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                            <li><a id="db_bv" href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                            <li><a id="db_cd" href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                            <li><a href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                            <li><a href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-10">
+                            <img src="/img/<%= CHUDE.wall_pic %>" style="object-fit: cover;width:100%;height:350px">
+                            <div class="tool-box-1" style="width: 100%;">
+                                    <button class="turn-b"type="button"><i class="fas fa-arrow-left"></i></button>
+                                    <% if(CHUDE.trangthai == null) { %>
+                                    <button id="<%= CHUDE.id %>" class="tamhoan" type="button"><i class="fas fa-stop"></i></button>
+                                    <% } else { %>
+                                        <button id="<%= CHUDE.id %>" class="bo_tamhoan" type="button"><i style="color: red" class="fas fa-stop"></i></button>
+                                        <% } %>
+                                </div>
+                                <h5><strong><i class="fas fa-biohazard"></i> Thông tin chủ đề</strong></h5>
+                                <div class="col-sm-6" style="border-top: slategray 2px solid;border-right: rosybrown 2px solid; padding-top: 10px">
+                                    <p><strong>Tên chủ đề: </strong><%= CHUDE.ten_cd %></p>
+                                    <p><strong>Ngày khởi tạo: </strong><%= CHUDE.created_at %></p>
+                                    <p><strong>Ngày cập nhật: </strong><%= CHUDE.updated_at %></p>
+                                    <p><strong>Ảnh đại diện: </strong><img src="/img/<%= CHUDE.wall_pic %>" style="object-fit: cover;width:150px;height:150px;border-radius: 50%"></p>
+                                    <p><strong>Mô tả: </strong><%= CHUDE.mota %></p>
+                                    <h5 style="border-top: seagreen 2px solid;margin-top: 10px;padding-top: 10px"><strong><i class="fas fa-desktop"></i> Trạng thái hoạt động: </strong></h5>
+                                            <% if(CHUDE.trangthai == null) { %>
+                                                <p><strong style="font-size: 20px;color:green">&#9679;</strong> <i>Đang hoạt động</i></p>
+                                                <% } else { %>
+                                                    <p><strong style="font-size: 20px;color:red">&#9679;</strong> <i>Đang tạm hoãn</i></p>
+                                                    <% } %>
+                                </div>
+                                <div class="col-sm-6">
+                                    <% if(CHUDE.trangthai == null) { %>
+                                    <button class="doianh"><strong><i style="font-size: 19px" class="far fa-image"></i> Đổi ảnh</strong></button>
+                                    <form action="../thayanh_cd/<%= CHUDE.id %>" method="POST" enctype="multipart/form-data">
+                                        <div style="margin-top: 20px" id="form_doianh" class="form-group" hidden>
+                                                <label for="mob_no" class="col-md-3 control-label">Đổi ảnh đại diện</label>
+                                                <div class="col-sm-9">
+                                                    <input class="form-control" type="file" name="uploaded_image" accept=""/>
+                                                </br>
+                                                    <input type="submit" value="Xác nhận">
+                                                </div>
+                                            </div>
+                                        </form>  
+                                        <button style="margin-top: 20px" class="doimota"><strong><i style="font-size: 19px" class="fas fa-file-alt"></i> Thay đổi mô tả</strong></button>
+                                        <form action="../thaydoi_mota/<%= CHUDE.id %>" method="POST" enctype="application/x-www-form-urlencoded">
+                                            <div style="margin-top: 20px" id="form_mota" class="form-group" hidden>
+                                                    <label for="mob_no" class="col-md-3 control-label">Thay đổi mô tả</label>
+                                                    <div class="col-sm-9">
+                                                        <textarea name="mota" class="form-control"></textarea>
+                                                    </br>
+                                                        <input type="submit" value="Xác nhận">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <% } else { %>
+                                                <div class="" style="border:red;border-radius:20px">
+                                                    <h5 style="color: red;padding: 10px 20px"><strong><i style="font-size: 30px" class="fas fa-tools"></i> Chủ đề đang tạm hoãn để bảo trì nhanh </strong></h5>
+                                                </div>
+                                                <% } %>
+                                </div>
+                    </div>
+                    <div class="col-md-2" style="background-color: violet">
+                        <h5><strong>Thông số chủ đề</strong></h5>
+                    </div>
+                    <div class="col-md-10" style="border-top: thistle 2px solid;margin-top: 10px">
+                        <div class="col-sm-4">
+                            <h5><strong>Bảng thông số với tổng</strong></h5>
+                            <div id="doughnutChart" class="chart"></div>
+                        </div>
+                        <div class="col-sm-2" style="margin-top: 30px">
+                                <% var bvcd = parseFloat(THONGSOBV.bvcd); %>
+                                <% var tong = parseFloat(THONGSOBV.tong); %>
+                            <p><strong style="font-size: 20px;color:#2C3E50">&#9632;</strong> <strong>Bài viết chủ đề: </strong><%= THONGSOBV.bvcd  %></p>
+                            <p><strong style="font-size: 20px;color:#FC4349">&#9632;</strong> <strong>Các chủ đề còn lại: </strong><%= tong - bvcd %></p>
+                            <input id="bvcd" value="<%= THONGSOBV.bvcd %>" hidden>
+                            <input id="tong" value="<%= THONGSOBV.tong %>" hidden>
+                            
+                            <p style="text-align: center"><strong>Bài viết chủ đề chiếm: </strong></p>
+                            <p style="text-align: center;background-color: tomato;padding: 10px;font-weight: bold;font-size: 19px; color: white"><%= Number((bvcd*100/tong).toFixed(1)) %>%</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5><strong><i class="fas fa-sticky-note"></i> Các bài viết</strong></h5>
+                            <div style="overflow:scroll;height:250px;width:100%;overflow:auto;background-color: whitesmoke">
+                                <% BAIVIET.forEach(function(data){  %>
+                                <div class="voteup">
+                                    <p><i class="fas fa-user"></i> <%= data.hoten %> - <i style="font-size: 19px;color: yellowgreen" class="fas fa-arrow-alt-circle-up"></i> - <i class="fas fa-sticky-note"></i> <strong><%= data.tieude %></strong> -| <i><%= data.noidung.substring(0,100) %>...</i> </p>
+                                    <p>Vào <i><%= data.created_at %></i></p>
+                                </div>
+                                <% }) %>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="background-color: turquoise">
+                        <h5><strong>Thông số theo dõi</strong></h5>
+                    </div>
+                    <div class="col-md-10" style="border-top: cadetblue 2px solid;margin-top:10px">
+                        <div class="col-sm-4">
+                            <h5><strong>Thông số theo dõi với tổng</strong></h5>
+                                <div style="width: 300px;height:300px;margin-left: 20px;" id="pieChart" class="chart1"></div>
+                        </div>
+                        <div class="col-sm-2" style="margin-top: 50px">
+                            <% var tong_fl = parseFloat(FLCD.tong); %>
+                            <% var flcd = parseFloat(FLCD.flcd); %>
+                            <p><strong style="font-size: 20px;color:#018ab6">&#9632;</strong> <strong>Số theo dõi: </strong><%= flcd %></p>
+                            <p><strong style="font-size: 20px;color:#fff100">&#9632;</strong> <strong>Số theo dõi còn lại: </strong><%= tong_fl - flcd %></p>
+                            <input id="tong_fl" value="<%= tong_fl %>" hidden>
+                            <input id="flcd" value="<%= flcd %>" hidden>
+
+                            <p style="text-align: center"><strong>Theo dõi chủ đề chiếm: </strong></p>
+                            <p style="text-align: center;background-color: tomato;padding: 10px;font-weight: bold;font-size: 19px; color: white"><%= Number((flcd*100/tong_fl).toFixed(1)) %>%</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5><strong><i class="fas fa-user-plus"></i> Các lượt theo dõi</strong></h5>
+                            <div style="overflow:scroll;height:250px;width:100%;overflow:auto;background-color: whitesmoke">
+                                <% FOLOWCD.forEach(function(data){ %>
+                                    <div class="voteup">
+                                            <p><i class="fas fa-user"></i> <%= data.hoten %> - <strong style="background-color: red;color: white;padding: 5px 5px;border-radius: 10px"><i class="fas fa-user-plus"></i> FOLLOWING</strong> </p>
+                                            <p>Vào <i><%= data.created_at %></i></p>
+                                        </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+    </body>
+    <script>
+    $(document).on('click','.doianh',function(){
+        $('#form_doianh').toggle();
+    });
+
+    $(document).on('click','.doimota',function(){
+        $('#form_mota').toggle();
+    });
+
+    $(document).on('click','.turn-b',function(){
+        window.location = '../chude_db';
+    });
+
+    $(document).on('click','.tamhoan',function(){
+        var idcd = $(this).attr('id');
+        if(confirm('Bạn có chắc muốn tạm hoãn chủ đề ?')){
+            // alert(idcd);
+            $.get('../ajax_admin/tamhoan_cd/'+idcd,function(){
+
+            });
+            alert('Đã tạm hoãn chủ đề');
+            window.location.reload();
+        }
+    });
+
+    $(document).on('click','.bo_tamhoan',function(){
+        var idcd = $(this).attr('id');
+        if(confirm('Bạn có chắc muốn bỏ tạm hoãn chủ đề ?')){
+            // alert(idcd);
+            $.get('../ajax_admin/botamhoan_cd/'+idcd,function(){
+
+            });
+            alert('Đã khôi phục trạng thái chủ đề');
+            window.location.reload();
+        } 
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+    //test nữa
+
+    $(function(){
+        var tong_fl = parseInt($('#tong_fl').val());
+        var flcd = parseInt($('#flcd').val());
+  $("#pieChart").drawPieChart([
+    
+    
+    { title: "Theo dõi chủ đề: ",          value:  flcd,   color: "#018ab6" },
+    { title: "Theo dõi chủ đề còn lại: ", value : tong_fl - flcd,   color: "#fff100" },
+    
+  ]);
+});
+
+/*!
+ * jquery.drawPieChart.js
+ * Version: 0.3(Beta)
+ * Inspired by Chart.js(http://www.chartjs.org/)
+ *
+ * Copyright 2013 hiro
+ * https://github.com/githiro/drawPieChart
+ * Released under the MIT license.
+ */
+;(function($, undefined) {
+  $.fn.drawPieChart = function(data, options) {
+    var $this = this,
+      W = $this.width(),
+      H = $this.height(),
+      centerX = W/2,
+      centerY = H/2,
+      cos = Math.cos,
+      sin = Math.sin,
+      PI = Math.PI,
+      settings = $.extend({
+        segmentShowStroke : true,
+        segmentStrokeColor : "#fff",
+        segmentStrokeWidth : 1,
+        baseColor: "#fff",
+        baseOffset: 15,
+        edgeOffset: 30,//offset from edge of $this
+        pieSegmentGroupClass: "pieSegmentGroup",
+        pieSegmentClass: "pieSegment",
+        lightPiesOffset: 12,//lighten pie's width
+        lightPiesOpacity: .3,//lighten pie's default opacity
+        lightPieClass: "lightPie",
+        animation : true,
+        animationSteps : 90,
+        animationEasing : "easeInOutExpo",
+        tipOffsetX: -15,
+        tipOffsetY: -45,
+        tipClass: "pieTip",
+        beforeDraw: function(){  },
+        afterDrawed : function(){  },
+        onPieMouseenter : function(e,data){  },
+        onPieMouseleave : function(e,data){  },
+        onPieClick : function(e,data){  }
+      }, options),
+      animationOptions = {
+        linear : function (t){
+          return t;
+        },
+        easeInOutExpo: function (t) {
+          var v = t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
+          return (v>1) ? 1 : v;
+        }
+      },
+      requestAnimFrame = function(){
+        return window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
+          function(callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+      }();
+
+    var $wrapper = $('<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>').appendTo($this);
+    var $groups = [],
+        $pies = [],
+        $lightPies = [],
+        easingFunction = animationOptions[settings.animationEasing],
+        pieRadius = Min([H/2,W/2]) - settings.edgeOffset,
+        segmentTotal = 0;
+
+    //Draw base circle
+    var drawBasePie = function(){
+      var base = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      var $base = $(base).appendTo($wrapper);
+      base.setAttribute("cx", centerX);
+      base.setAttribute("cy", centerY);
+      base.setAttribute("r", pieRadius+settings.baseOffset);
+      base.setAttribute("fill", settings.baseColor);
+    }();
+
+    //Set up pie segments wrapper
+    var pathGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    var $pathGroup = $(pathGroup).appendTo($wrapper);
+    $pathGroup[0].setAttribute("opacity",0);
+
+    //Set up tooltip
+    var $tip = $('<div class="' + settings.tipClass + '" />').appendTo('body').hide(),
+      tipW = $tip.width(),
+      tipH = $tip.height();
+
+    for (var i = 0, len = data.length; i < len; i++){
+      segmentTotal += data[i].value;
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute("data-order", i);
+      g.setAttribute("class", settings.pieSegmentGroupClass);
+      $groups[i] = $(g).appendTo($pathGroup);
+      $groups[i]
+        .on("mouseenter", pathMouseEnter)
+        .on("mouseleave", pathMouseLeave)
+        .on("mousemove", pathMouseMove)
+        .on("click", pathClick);
+
+      var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute("stroke-width", settings.segmentStrokeWidth);
+      p.setAttribute("stroke", settings.segmentStrokeColor);
+      p.setAttribute("stroke-miterlimit", 2);
+      p.setAttribute("fill", data[i].color);
+      p.setAttribute("class", settings.pieSegmentClass);
+      $pies[i] = $(p).appendTo($groups[i]);
+
+      var lp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      lp.setAttribute("stroke-width", settings.segmentStrokeWidth);
+      lp.setAttribute("stroke", settings.segmentStrokeColor);
+      lp.setAttribute("stroke-miterlimit", 2);
+      lp.setAttribute("fill", data[i].color);
+      lp.setAttribute("opacity", settings.lightPiesOpacity);
+      lp.setAttribute("class", settings.lightPieClass);
+      $lightPies[i] = $(lp).appendTo($groups[i]);
+    }
+
+    settings.beforeDraw.call($this);
+    //Animation start
+    triggerAnimation();
+
+    function pathMouseEnter(e){
+      var index = $(this).data().order;
+      $tip.text(data[index].title + ": " + data[index].value).fadeIn(200);
+      if ($groups[index][0].getAttribute("data-active") !== "active"){
+        $lightPies[index].animate({opacity: .8}, 180);
+      }
+      settings.onPieMouseenter.apply($(this),[e,data]);
+    }
+    function pathMouseLeave(e){
+      var index = $(this).data().order;
+      $tip.hide();
+      if ($groups[index][0].getAttribute("data-active") !== "active"){
+        $lightPies[index].animate({opacity: settings.lightPiesOpacity}, 100);
+      }
+      settings.onPieMouseleave.apply($(this),[e,data]);
+    }
+    function pathMouseMove(e){
+      $tip.css({
+        top: e.pageY + settings.tipOffsetY,
+        left: e.pageX - $tip.width() / 2 + settings.tipOffsetX
+      });
+    }
+    function pathClick(e){
+      var index = $(this).data().order;
+      var targetGroup = $groups[index][0];
+      for (var i = 0, len = data.length; i < len; i++){
+        if (i === index) continue;
+        $groups[i][0].setAttribute("data-active","");
+        $lightPies[i].css({opacity: settings.lightPiesOpacity});
+      }
+      if (targetGroup.getAttribute("data-active") === "active"){
+        targetGroup.setAttribute("data-active","");
+        $lightPies[index].css({opacity: .8});
+      } else {
+        targetGroup.setAttribute("data-active","active");
+        $lightPies[index].css({opacity: 1});
+      }
+      settings.onPieClick.apply($(this),[e,data]);
+    }
+    function drawPieSegments (animationDecimal){
+      var startRadius = -PI/2,//-90 degree
+          rotateAnimation = 1;
+      if (settings.animation) {
+        rotateAnimation = animationDecimal;//count up between0~1
+      }
+
+      $pathGroup[0].setAttribute("opacity",animationDecimal);
+
+      //draw each path
+      for (var i = 0, len = data.length; i < len; i++){
+        var segmentAngle = rotateAnimation * ((data[i].value/segmentTotal) * (PI*2)),//start radian
+            endRadius = startRadius + segmentAngle,
+            largeArc = ((endRadius - startRadius) % (PI * 2)) > PI ? 1 : 0,
+            startX = centerX + cos(startRadius) * pieRadius,
+            startY = centerY + sin(startRadius) * pieRadius,
+            endX = centerX + cos(endRadius) * pieRadius,
+            endY = centerY + sin(endRadius) * pieRadius,
+            startX2 = centerX + cos(startRadius) * (pieRadius + settings.lightPiesOffset),
+            startY2 = centerY + sin(startRadius) * (pieRadius + settings.lightPiesOffset),
+            endX2 = centerX + cos(endRadius) * (pieRadius + settings.lightPiesOffset),
+            endY2 = centerY + sin(endRadius) * (pieRadius + settings.lightPiesOffset);
+        var cmd = [
+          'M', startX, startY,//Move pointer
+          'A', pieRadius, pieRadius, 0, largeArc, 1, endX, endY,//Draw outer arc path
+          'L', centerX, centerY,//Draw line to the center.
+          'Z'//Cloth path
+        ];
+        var cmd2 = [
+          'M', startX2, startY2,
+          'A', pieRadius + settings.lightPiesOffset, pieRadius + settings.lightPiesOffset, 0, largeArc, 1, endX2, endY2,//Draw outer arc path
+          'L', centerX, centerY,
+          'Z'
+        ];
+        $pies[i][0].setAttribute("d",cmd.join(' '));
+        $lightPies[i][0].setAttribute("d", cmd2.join(' '));
+        startRadius += segmentAngle;
+      }
+    }
+
+    var animFrameAmount = (settings.animation)? 1/settings.animationSteps : 1,//if settings.animationSteps is 10, animFrameAmount is 0.1
+        animCount =(settings.animation)? 0 : 1;
+    function triggerAnimation(){
+      if (settings.animation) {
+        requestAnimFrame(animationLoop);
+      } else {
+        drawPieSegments(1);
+      }
+    }
+    function animationLoop(){
+      animCount += animFrameAmount;//animCount start from 0, after "settings.animationSteps"-times executed, animCount reaches 1.
+      drawPieSegments(easingFunction(animCount));
+      if (animCount < 1){
+        requestAnimFrame(arguments.callee);
+      } else {
+        settings.afterDrawed.call($this);
+      }
+    }
+    function Max(arr){
+      return Math.max.apply(null, arr);
+    }
+    function Min(arr){
+      return Math.min.apply(null, arr);
+    }
+    return $this;
+  };
+})(jQuery);
+    //test chart
+    var bvcd = parseFloat($('#bvcd').val());
+    var tong = parseFloat($('#tong').val());
+    $(function(){
+  $("#doughnutChart").drawDoughnutChart([
+    { title: "Bài viết chủ đề",         value : bvcd,  color: "#2C3E50" },
+    { title: "Các chủ đề còn lại", value:  tong - bvcd,   color: "#FC4349" },
+    
+  ]);
+});
+/*!
+ * jquery.drawDoughnutChart.js
+ * Version: 0.4.1(Beta)
+ * Inspired by Chart.js(http://www.chartjs.org/)
+ *
+ * Copyright 2014 hiro
+ * https://github.com/githiro/drawDoughnutChart
+ * Released under the MIT license.
+ * 
+ */
+;(function($, undefined) {
+  $.fn.drawDoughnutChart = function(data, options) {
+    var $this = this,
+      W = $this.width(),
+      H = $this.height(),
+      centerX = W/2,
+      centerY = H/2,
+      cos = Math.cos,
+      sin = Math.sin,
+      PI = Math.PI,
+      settings = $.extend({
+        segmentShowStroke : true,
+        segmentStrokeColor : "#0C1013",
+        segmentStrokeWidth : 1,
+        baseColor: "rgba(0,0,0,0.5)",
+        baseOffset: 4,
+        edgeOffset : 10,//offset from edge of $this
+        percentageInnerCutout : 75,
+        animation : true,
+        animationSteps : 90,
+        animationEasing : "easeInOutExpo",
+        animateRotate : true,
+        tipOffsetX: -8,
+        tipOffsetY: -45,
+        tipClass: "doughnutTip",
+        summaryClass: "doughnutSummary",
+        summaryTitle: "TOTAL:",
+        summaryTitleClass: "doughnutSummaryTitle",
+        summaryNumberClass: "doughnutSummaryNumber",
+        beforeDraw: function() {  },
+        afterDrawed : function() {  },
+        onPathEnter : function(e,data) {  },
+        onPathLeave : function(e,data) {  }
+      }, options),
+      animationOptions = {
+        linear : function (t) {
+          return t;
+        },
+        easeInOutExpo: function (t) {
+          var v = t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
+          return (v>1) ? 1 : v;
+        }
+      },
+      requestAnimFrame = function() {
+        return window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
+          function(callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+      }();
+
+    settings.beforeDraw.call($this);
+
+    var $svg = $('<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>').appendTo($this),
+        $paths = [],
+        easingFunction = animationOptions[settings.animationEasing],
+        doughnutRadius = Min([H / 2,W / 2]) - settings.edgeOffset,
+        cutoutRadius = doughnutRadius * (settings.percentageInnerCutout / 100),
+        segmentTotal = 0;
+
+    //Draw base doughnut
+    var baseDoughnutRadius = doughnutRadius + settings.baseOffset,
+        baseCutoutRadius = cutoutRadius - settings.baseOffset;
+    $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+      .attr({
+        "d": getHollowCirclePath(baseDoughnutRadius, baseCutoutRadius),
+        "fill": settings.baseColor
+      })
+      .appendTo($svg);
+
+    //Set up pie segments wrapper
+    var $pathGroup = $(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
+    $pathGroup.attr({opacity: 0}).appendTo($svg);
+
+    //Set up tooltip
+    var $tip = $('<div class="' + settings.tipClass + '" />').appendTo('body').hide(),
+        tipW = $tip.width(),
+        tipH = $tip.height();
+
+    //Set up center text area
+    var summarySize = (cutoutRadius - (doughnutRadius - cutoutRadius)) * 2,
+        $summary = $('<div class="' + settings.summaryClass + '" />')
+                   .appendTo($this)
+                   .css({ 
+                     width: summarySize + "px",
+                     height: summarySize + "px",
+                     "margin-left": -(summarySize / 2) + "px",
+                     "margin-top": -(summarySize / 2) + "px"
+                   });
+    var $summaryTitle = $('<p class="' + settings.summaryTitleClass + '">' + settings.summaryTitle + '</p>').appendTo($summary);
+    var $summaryNumber = $('<p class="' + settings.summaryNumberClass + '"></p>').appendTo($summary).css({opacity: 0});
+
+    for (var i = 0, len = data.length; i < len; i++) {
+      segmentTotal += data[i].value;
+      $paths[i] = $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+        .attr({
+          "stroke-width": settings.segmentStrokeWidth,
+          "stroke": settings.segmentStrokeColor,
+          "fill": data[i].color,
+          "data-order": i
+        })
+        .appendTo($pathGroup)
+        .on("mouseenter", pathMouseEnter)
+        .on("mouseleave", pathMouseLeave)
+        .on("mousemove", pathMouseMove);
+    }
+
+    //Animation start
+    animationLoop(drawPieSegments);
+
+    //Functions
+    function getHollowCirclePath(doughnutRadius, cutoutRadius) {
+        //Calculate values for the path.
+        //We needn't calculate startRadius, segmentAngle and endRadius, because base doughnut doesn't animate.
+        var startRadius = -1.570,// -Math.PI/2
+            segmentAngle = 6.2831,// 1 * ((99.9999/100) * (PI*2)),
+            endRadius = 4.7131,// startRadius + segmentAngle
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,
+          'A', doughnutRadius, doughnutRadius, 0, 1, 1, endX, endY,//Draw outer circle
+          'Z',//Close path
+          'M', startX2, startY2,//Move pointer
+          'A', cutoutRadius, cutoutRadius, 0, 1, 0, endX2, endY2,//Draw inner circle
+          'Z'
+        ];
+        cmd = cmd.join(' ');
+        return cmd;
+    };
+    function pathMouseEnter(e) {
+      var order = $(this).data().order;
+      $tip.text(data[order].title + ": " + data[order].value)
+          .fadeIn(200);
+      settings.onPathEnter.apply($(this),[e,data]);
+    }
+    function pathMouseLeave(e) {
+      $tip.hide();
+      settings.onPathLeave.apply($(this),[e,data]);
+    }
+    function pathMouseMove(e) {
+      $tip.css({
+        top: e.pageY + settings.tipOffsetY,
+        left: e.pageX - $tip.width() / 2 + settings.tipOffsetX
+      });
+    }
+    function drawPieSegments (animationDecimal) {
+      var startRadius = -PI / 2,//-90 degree
+          rotateAnimation = 1;
+      if (settings.animation && settings.animateRotate) rotateAnimation = animationDecimal;//count up between0~1
+
+      drawDoughnutText(animationDecimal, segmentTotal);
+
+      $pathGroup.attr("opacity", animationDecimal);
+
+      //If data have only one value, we draw hollow circle(#1).
+      if (data.length === 1 && (4.7122 < (rotateAnimation * ((data[0].value / segmentTotal) * (PI * 2)) + startRadius))) {
+        $paths[0].attr("d", getHollowCirclePath(doughnutRadius, cutoutRadius));
+        return;
+      }
+      for (var i = 0, len = data.length; i < len; i++) {
+        var segmentAngle = rotateAnimation * ((data[i].value / segmentTotal) * (PI * 2)),
+            endRadius = startRadius + segmentAngle,
+            largeArc = ((endRadius - startRadius) % (PI * 2)) > PI ? 1 : 0,
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,//Move pointer
+          'A', doughnutRadius, doughnutRadius, 0, largeArc, 1, endX, endY,//Draw outer arc path
+          'L', startX2, startY2,//Draw line path(this line connects outer and innner arc paths)
+          'A', cutoutRadius, cutoutRadius, 0, largeArc, 0, endX2, endY2,//Draw inner arc path
+          'Z'//Cloth path
+        ];
+        $paths[i].attr("d", cmd.join(' '));
+        startRadius += segmentAngle;
+      }
+    }
+    function drawDoughnutText(animationDecimal, segmentTotal) {
+      $summaryNumber
+        .css({opacity: animationDecimal})
+        .text((segmentTotal * animationDecimal).toFixed(1));
+    }
+    function animateFrame(cnt, drawData) {
+      var easeAdjustedAnimationPercent =(settings.animation)? CapValue(easingFunction(cnt), null, 0) : 1;
+      drawData(easeAdjustedAnimationPercent);
+    }
+    function animationLoop(drawData) {
+      var animFrameAmount = (settings.animation)? 1 / CapValue(settings.animationSteps, Number.MAX_VALUE, 1) : 1,
+          cnt =(settings.animation)? 0 : 1;
+      requestAnimFrame(function() {
+          cnt += animFrameAmount;
+          animateFrame(cnt, drawData);
+          if (cnt <= 1) {
+            requestAnimFrame(arguments.callee);
+          } else {
+            settings.afterDrawed.call($this);
+          }
+      });
+    }
+    function Max(arr) {
+      return Math.max.apply(null, arr);
+    }
+    function Min(arr) {
+      return Math.min.apply(null, arr);
+    }
+    function isNumber(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    function CapValue(valueToCap, maxValue, minValue) {
+      if (isNumber(maxValue) && valueToCap > maxValue) return maxValue;
+      if (isNumber(minValue) && valueToCap < minValue) return minValue;
+      return valueToCap;
+    }
+    return $this;
+  };
+})(jQuery);
+    </script>
+</html>

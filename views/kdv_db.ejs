@@ -1,0 +1,358 @@
+<html>
+    <head>
+        <title>Kiểm duyệt viên</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+  <link rel='stylesheet' href='/css/style.css' />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io({transports: ['websocket'], upgrade: false, multiplex: false});
+
+socket.on('server-check', function(data){
+    // alert(data);
+    $('#alert-area').append("<p class='alert'><i class='fas fa-user'></i>   <strong>System:   </strong>"+ data + "</p>");
+    var test = $('.alert');
+    var i;
+    for (i = 0; i < test.length; i++){
+    setTimeout(function() {
+    test.fadeOut('fast');
+}, 5000);
+}
+});
+
+socket.on('server-send', function(data){
+    $('#logacess').append("<li class='noti-mod' id='noti-mod'><i class='fas fa-star'></i>   "+data+"</li>");
+    var test = $('.noti-mod');
+    $('#noti-num').empty().append('N');
+});
+
+$(document).ready(function(){
+    $('#btn-noti').click(function(){
+        $('#noti-num').empty();
+    });
+});
+
+$(document).ready(function(){
+    var idkv = $('#idkdv').val();
+    socket.emit('Client-id',idkv);
+});
+
+socket.on('test-user-update',function(data){
+    $('#alert-area').append("<div id='test_alert_up' class='alert_update_dx'><i class='fas fa-eye'></i>   Bài viết  <strong>"+   data.tieude   +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  đang được xem</div>");
+    $('#logwork').append("<li class='noti-work'><i class='fas fa-star'></i>Bài viết  <strong>"+  data.tieude  +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  đang được xem</li>");
+    $('#noti-num1').empty().append('N');
+    var test = $('.alert_update_dx');
+            var i;
+            for (i = 0; i < test.length; i++){
+            setTimeout(function() {
+            test.fadeOut('fast');
+}, 5000);
+}
+});
+
+socket.on('test-user-insert',function(data){
+    $('#alert-area').append("<div id='test_alert_up' class='alert_insert'><i class='fas fa-wifi'></i>   Bài viết  <strong>"+   data.tieude   +"</strong>  vừa được đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong></div>");
+    $('#logwork').append("<li class='noti-work'><i class='fas fa-star'></i>Bài viết  <strong>"+  data.tieude  +"</strong>  vừa được đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong></li>");
+    $('#noti-num1').empty().append('N');
+    var test = $('.alert_insert');
+            var i;
+            for (i = 0; i < test.length; i++){
+            setTimeout(function() {
+            test.fadeOut('fast');
+}, 5000);
+}
+});
+
+socket.on('obj-noti',function(obj){
+    if(obj.action == 'INSERT'){
+        socket.emit('insert-noti',obj.data);
+    }
+    else if(obj.action == 'UPDATE'){
+        if(obj.data.da_xem == 1 && obj.data.restrict_area == null){
+            socket.emit('update-noti-dx',obj.data);
+        }
+        else{
+            socket.emit('update-noti',obj.data);
+        }
+    }
+});
+
+socket.on('test-user-update-duyetbai',function(data){
+    if(data.tq_dc == 0){
+    $('#alert-area').append("<div id='test_alert_up' class='test_alert_up_db'><i class='fa fa-check'></i>   Bài viết  <strong>"+   data.tieude   +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  vừa được thông qua bởi  <strong>"+  data.duyetbai  +"</strong></div>");
+    $('#logwork').append("<li class='noti-work'><i class='fas fa-star'></i>Bài viết  <strong>"+  data.tieude  +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  vừa được thông qua bởi  <strong>"+  data.duyetbai  +"</strong></li>");
+    $('#noti-num1').empty().append('N');
+}
+else if(data.tq_dc == 1){
+    $('#alert-area').append("<div id='test_alert_up' class='test_alert_up_db'><i class='fa fa-ban'></i>   Bài viết  <strong>"+   data.tieude   +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  vừa bị từ chối bởi  <strong>"+  data.duyetbai  +"</strong></div>");
+    $('#logwork').append("<li class='noti-work'><i class='fas fa-star'></i>Bài viết  <strong>"+  data.tieude  +"</strong>  đăng bởi  <strong>"+  data.hoten  +"</strong>  trong  <strong>"+  data.chude  +"</strong>  vừa bị từ chối bởi  <strong>"+  data.duyetbai  +"</strong></li>")
+    $('#noti-num1').empty().append('N');
+}
+    var test = $('.test_alert_up_db');
+            var i;
+            for (i = 0; i < test.length; i++){
+            setTimeout(function() {
+            test.fadeOut('fast');
+}, 5000);
+}
+});
+
+$(document).ready(function(){
+    $('#btn-work').click(function(){
+        $('#noti-num1').empty();
+    });
+});
+
+</script>
+</head>
+    <body>
+        <div id="alert-area" class="alert-area"></div>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span> 
+                </button>
+                <a class="navbar-brand" href="#">Bảng điều khiển</a>
+              </div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                  
+                  <li><a href="<%= CHECK.id %>/hopthu"><i class="fa fa-envelope"></i>    Hộp thư</a></li> 
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  <button id="btn-noti" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-history"></i><p id="noti-num"></p></button>
+                    <ul style="overflow:scroll;height:250px;overflow:auto" class="dropdown-menu" id="logacess">
+                      
+                        <li>Log access</li>
+                    </ul>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div class="container-fluid">
+          <div class="dropdown">
+                <button id="btn-work" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-bell" style="font-size:20px;"></i><p id="noti-num1"></p></button>
+                <ul style="overflow:scroll;height:250px;width:300px;overflow:auto" class="dropdown-menu" id="logwork">
+                  
+                    <li>Log working</li>
+                </ul>
+              </div>
+          <div class="list">           
+              <h3 style="color:white"><i class="fa fa-list fa-border" aria-hidden="true" style="background-color: white;color: black"></i> Danh sách bài viết</h3>
+          </div>
+          <h4><i class="fas fa-fire-alt fa-2x" style="color: red"></i>      Các bài viết chưa được xem qua</h4>
+          <div class="form-group" style="float:right;margin-right:34px">
+                <label>Lọc theo thể loại:</label>
+                <select class="col-sm-2 form-control" name="filter" id="filter">
+                    <option value="0">Tất cả</option>
+                    <% FILT.forEach(function(ft){ %>
+                    <option value="<%= ft.id %>"><%= ft.ten_cd %></option>
+                    <% }); %>
+                </select>
+              </div>
+    <div style="overflow:scroll;height:250px;width:100%;overflow:auto">
+        <div class="container" style="width: 100%; border: black solid 1px; background-color: powderblue">
+            <table class="table table-striped table-bordered table-hover" style="background-color: lightyellow">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="col-sm-2">Tiêu đề</th>
+                    <th class="col-sm-4">Nội dung</th>
+                    <th class="col-sm-1">Trích dẫn</th>
+                    <th class="col-sm-1">Keywords</th>
+                    <th class="col-sm-2">Ngày đăng</th>
+                    <th class="col-sm-1">Chủ đề</th>
+                    <th class="col-sm-1">Xem</th>
+                </tr>
+            </thead>
+            <tbody id="testFilter">
+                <% var i = 1; %>
+                <% LOP.rows.forEach(function(bv){ %>
+                    <% if(bv.da_xem == null){ %>
+                    <tr>
+                        <td><%= i++ %></td>
+                        <td><%= bv.tieude %></td>
+                        <td><%= bv.noidung.substring(0, 200) %>...</td>
+                        <td><%= bv.trichdan %></td>
+                        <td><%= bv.keyword %></td>
+                        <td><%= bv.created_at %></td>
+                        <td><%= bv.ten_cd %></td>
+                        <td class="tacvu"><a class="hvr-grow" href="../kdv/<%= CHECK.id %>/baiviet/<%= bv.id %>">Xem</a></td>
+                    </tr>
+                    <% } %>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <h4 style="margin-top:20px"><i class="fas fa-question fa-2x" style="color:darkgoldenrod"></i>   Các bài viết đã xem qua nhưng chưa đánh giá</h4>
+    <div class="form-group" style="float:right;margin-right:34px;margin-top: 20px">
+            <label>Lọc theo thể loại:</label>
+            <select class="col-sm-2 form-control" name="filter1" id="filter1">
+                <option value="0">Tất cả</option>
+                <% FILT1.forEach(function(ft){ %>
+                <option value="<%= ft.id %>"><%= ft.ten_cd %></option>
+                <% }); %>
+            </select>
+          </div>
+        <div style="overflow:scroll;height:250px;width:100%;overflow:auto">
+                <div class="container" style="width: 100%; border: black solid 1px; background-color:crimson">
+        <table class="table table-striped table-bordered table-hover" style="background-color:lightpink">
+                <thead>
+                    <tr>
+                            <th></th>
+                            <th class="col-sm-2">Tiêu đề</th>
+                            <th class="col-sm-4">Nội dung</th>
+                            <th class="col-sm-1">Trích dẫn</th>
+                            <th class="col-sm-1">Keywords</th>
+                            <th class="col-sm-2">Ngày đăng</th>
+                            <th class="col-sm-1">Chủ đề</th>
+                            <th class="col-sm-1">Đánh giá</th>
+                    </tr>
+                </thead>
+                <tbody id="testFilter1">
+                        <% var i = 1; %>
+                        <% LOP.rows.forEach(function(bv){ %>
+                            <% if(bv.da_xem != null && bv.restrict_area == null){ %>
+                            <tr>
+                                <td><%= i++ %></td>
+                                <td><%= bv.tieude %></td>
+                                <td><%= bv.noidung.substring(0, 200) %>...</td>
+                                <td><%= bv.trichdan %></td>
+                                <td><%= bv.keyword %></td>
+                                <td><%= bv.created_at %></td>
+                                <td><%= bv.ten_cd %></td>
+                                <td class="tacvu1"><a class="hvr-grow" href="../kdv/<%= CHECK.id %>/baiviet/<%= bv.id %>">Xem</a></td>
+                            </tr>
+                            <% } %>
+                        <% }); %>
+                    </tbody>
+            </table>
+            </div>
+            </div>
+            <h4 style="margin-top:20px"><i class="fas fa-check fa-2x" style="color:lightgreen"></i>  Các bài viết đã đánh giá</h4>
+            <div class="form-group" style="float:right;margin-right:34px;margin-top: 20px">
+                    <label>Lọc theo thể loại:</label>
+                    <select class="col-sm-2 form-control" name="filter2" id="filter2">
+                        <option value="0">Tất cả</option>
+                        <% FILT2.forEach(function(ft){ %>
+                        <option value="<%= ft.id %>"><%= ft.ten_cd %></option>
+                        <% }); %>
+                    </select>
+                  </div>
+            <div style="overflow:scroll;height:250px;width:100%;overflow:auto">
+                    <div class="container" style="width: 100%; border: black solid 1px; background-color:darkolivegreen">
+            <table class="table table-striped table-bordered table-hover" style="background-color:greenyellow">
+                <thead>
+                    <tr>
+                        <th></th>
+                            <th class="col-sm-2">Tiêu đề</th>
+                            <th class="col-sm-4">Nội dung</th>
+                            <th class="col-sm-1">Trích dẫn</th>
+                            <th class="col-sm-1">Keywords</th>
+                            <th class="col-sm-1">Chủ đề</th>
+                            <th class="col-sm-1">Đánh giá</th>
+                            <th class="col-sm-1">Kiểm duyệt</th>
+                            <th class="col-sm-1">Xem lại</th>
+                    </tr>
+                </thead>
+                <tbody id="testFilter2">
+                    <% var i = 1; %>
+                        <% LOP.rows.forEach(function(bv){ %>
+                            <% if(bv.restrict_area != null){ %>
+                            <tr>
+                                <td><%= i++ %></td>
+                                <td><%= bv.tieude %></td>
+                                <td><%= bv.noidung.substring(0, 200) %>...</td>
+                                <td><%= bv.trichdan %></td>
+                                <td><%= bv.keyword %></td>
+                                <td><%= bv.ten_cd %></td>
+                                <% if(bv.restrict_area == 0) { %>
+                                <td class="thongqua">Thông qua</td>
+                                <% } else { %>
+                                <td class="tuchoi">Từ chối</td>
+                                <% } %>
+                                <td><%= bv.hoten %></td>
+                                <td class="tacvu2"><a class="hvr-grow" href="../kdv/<%= CHECK.id %>/baiviet/<%= bv.id %>">Xem</a></td>
+                            </tr>
+                            <% } %>
+                        <% }); %>
+                    </tbody>
+            </table>
+            <input value="<%= CHECK.id %>" id="idkdv" hidden>
+        </div>
+        </body>
+</html>
+<script>
+var test = $(document).ready(function(){
+    var idkv = $('#idkdv').val();
+    // alert(idkv);
+    $('#filter').change(function(){
+        var idFilter = $(this).val();
+        if(idFilter == 0){
+            window.location.reload(false);
+        }
+        else
+        $.get("./ajax/"+idkv+"/filter/"+idFilter,function(data){
+            // alert(data);
+            var showFilter = $('#testFilter');
+            showFilter.html(data);
+        });
+    });
+});
+
+var test1 = $(document).ready(function(){
+    var idkv = $('#idkdv').val();
+    // alert(idkv);
+    $('#filter1').change(function(){
+        var idFilter = $(this).val();
+        if(idFilter == 0){
+            window.location.reload(false);
+        }
+        else
+        $.get("./ajax/"+idkv+"/filter1/"+idFilter,function(data){
+            // alert(data);
+            var showFilter = $('#testFilter1');
+            showFilter.html(data);
+        });
+    });
+});
+
+var test2 = $(document).ready(function(){
+    var idkv = $('#idkdv').val();
+    // alert(idkv);
+    $('#filter2').change(function(){
+        var idFilter = $(this).val();
+        if(idFilter == 0){
+            window.location.reload(false);
+        }
+        else
+        $.get("./ajax/"+idkv+"/filter2/"+idFilter,function(data){
+            // alert(data);
+            var showFilter = $('#testFilter2');
+            showFilter.html(data);
+        });
+    });
+});
+
+jQuery(function($) {
+  function fixDiv() {
+    var $cache = $('.alert-area');
+    if ($(window).scrollTop() > 0)
+      $cache.css({
+        'position': 'fixed'
+      });
+  }
+  $(window).scroll(fixDiv);
+  fixDiv();
+});
+</script>

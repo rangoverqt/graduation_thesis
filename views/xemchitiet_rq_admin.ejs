@@ -1,0 +1,93 @@
+<html>
+        <head>
+                <title>Chi tiết yêu cầu người dùng Admin</title>
+                <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+          <link rel='stylesheet' href='/css/style.css' />
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+        <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+        <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+        <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+            </head>
+            <body>
+                    <div class="container-fluid">
+                            <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                                <h4 style="float:none">Admin Dashboard</h4>
+                                <ul>
+                                    <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                                    <li><a id="db_bv" href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                                    <li><a href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                                    <li><a id="pq_db" href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                                    <li><a id="ht_db" href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-10">
+                                    <div class="tool-box-1" style="width: 100%;">
+                                            <button class="turn-b"type="button"><i class="fas fa-arrow-left"></i></button>
+                                            <button id="<%= REP.idrq %>" class="xoa_rq" type="button"><i class="fa fa-trash"></i></button>
+                                            </div>
+                                            <h5><strong><i class="fas fa-question"></i> Yêu cầu người dùng</strong></h5>
+                <div class="col-sm-7" style="border-right: lightblue 2px solid">
+                    <p><strong>Tiêu đề: </strong><%= REP.tieude %></p>
+                    <p><strong>Nội dung: </strong></p>
+                    <div class="noidung_test_rpbv1" style="text-align: justify">
+                        <input id="test_noidung" value="<%= REP.noidung %>" hidden>
+                </div>
+                </div>
+                <div class="col-sm-5">
+                        <p><strong>Gửi</strong> vào <i><%= REP.created_at %></i></p>
+                        <p><strong>Người gửi: </strong><img src="/img/<%= REP.avatar %>" style="object-fit: cover;width:60px;height:60px;border-radius: 50%"> <i><%= REP.hoten %></i></p>
+                        <p style="padding-top:10px;margin-top: 10px;border-top:tomato 2px solid"><strong>Dựa theo báo cáo người dùng</strong></p>
+                        <div class="rpnd">
+                            <p><strong>Người yêu cầu: </strong><a href="../xemchitiet/<%= RQ.iduser %>"><img src="/img/<%= RQ.avatar %>" style="object-fit: cover;width:60px;height:60px;border-radius: 50%"> <%= RQ.hoten %></a></p>
+                            
+                            <% if(RQ.loai_rq == 1) { %>
+                                <p><strong>Lý do: </strong>Hỗ trợ tài khoản</p>
+                                <% } else if(RQ.loai_rq == 2) { %>
+                                    <p><strong>Lý do: </strong>Góp ý, yêu cầu chủ đề</p>
+                                    <% } else { %>
+                                        <p><strong>Lý do: </strong>Xem xét tham gia đội ngũ Coyome</p>
+                                        <% } %>
+                            <p><strong>Nội dung: </strong><%= RQ.noidung %></p>
+                        </div>
+                    </div>
+                                            </div>
+                            </div>
+            </body>
+            <script>
+            $(document).on('click','.turn-b',function(){
+    window.location = '../hopthu';
+});
+
+$(document).on('click','.xoa_rq',function(){
+      idrq = $(this).attr('id');
+      alert(idrq);
+      if(confirm('Bạn có chắc muốn xóa báo cáo người dùng này ?')){
+        $.get('../ajax_admin/xoa_rq/'+idrq,function(){
+
+        })
+        alert('Đã xóa báo cáo người dùng');
+        window.location.reload(false);
+      }
+    });
+
+var $log = $('.noidung_test_rpbv1'),
+str = $('#test_noidung').val();
+// alert(str);
+html = $.parseHTML(str);
+nodeNames = [];
+// Append the parsed HTML
+$log.append( html );
+// Gather the parsed HTML's node names
+$.each( html, function( i, el ) {
+  nodeNames[ i ] = "<li>" + el.nodeName + "</li>";
+});
+            </script>
+</html>

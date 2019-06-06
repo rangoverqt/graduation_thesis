@@ -1,0 +1,158 @@
+<html>
+    <head>
+            <title>Thư đã gửi</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+            <link rel='stylesheet' href='/css/style.css' />
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+          <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+            <nav class="navbar navbar-inverse" style="margin-bottom: 0">
+                    <div class="container-fluid">
+                      <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span> 
+                        </button>
+                        <a class="navbar-brand" href="#">Coyome Moderators Dashboard</a>
+                      </div>
+                      <div class="collapse navbar-collapse" id="myNavbar">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/./kdv/<%= IDKDV %>"><i class="fas fa-pencil-alt"></i>    Bài viết</a></li>  
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                  <h3 style="color:black;font-weight: bold"><i class="fas fa-balance-scale fa-border" aria-hidden="true" style="background-color: white;color: black"></i> Hộp thư tiếp nhận</h3>
+          <div class="container-fluid" style="background-color:burlywood">
+            <div class="col-md-2">
+                  <div class="khung_select" style="margin-top: 50px;">
+                      <a href="../<%= IDKDV %>/hopthu"><h5 id="hopthuden"><i class="fas fa-archive"></i>     Hộp thư đến</h5></a>
+                      <a class="thudagui" href="../<%= IDKDV %>/thudagui"><h5 id="thudagui"><i class="fa fa-paper-plane"></i>     Thư đã gửi</h5></a>
+                      <a class="thungrac" href="../<%= IDKDV %>/thungrac"><h5 id="thungrac"><i class="fa fa-trash"></i>     Thùng rác</h5></a>
+                      <a class="thugansao" href="../<%= IDKDV %>/thugansao"><h5 id="thugansao"><i class="fas fa-star"></i>     Thư gắn sao</h5></a>
+                      <a class="thuguiad" href="../<%= IDKDV %>/thuguiad"><h5 id="thuguiad"><i class="fas fa-audio-description"></i>     Thư đã gửi Admin</h5></a>
+                    </div>
+            </div>
+            <div class="col-md-10" style="background-color:darkgrey">
+                    <h4><i class="fas fa-inbox"></i>        Thư đã gửi</h4>
+                    <div style="overflow:scroll;height:500px;width:100%;overflow:auto">
+                            <div class="container" style="width: 100%; border: black solid 1px;">
+                                    <table class="table table-hover" style="background-color: lightyellow">
+                                        <h5><strong>Báo cáo bài viết</strong></h5>
+                                        <tbody id="test_mucthu">
+                                            <% REPRPBV.forEach(function(data) { %>
+                                                <tr id="chua_xem" class="table-row" data-href='#'>
+                                                    <td class="col-sm-3"><strong><i class="fas fa-user"></i>    <%= data.hoten %></strong></td>
+                                                    <td class="col-sm-3"><strong>-      <%= data.tieude %></strong></td>
+                                                    <td class="col-sm-3"><strong><i class="fas fa-reply"></i>  Trả lời cho</strong>     <%= data.chuthich.substring(0, 50) %>...</td>
+                                                    <td class="col-sm-3"><%= data.created_at%></td>
+                                                    <td class="button"><button type="button" class="xoarep-rpbv" id="<%= data.id %>"><i style="font-size:19px;" class="fa fa-trash"></i></button></td>
+                                                    <td class="button"><button id="<%= data.id %>" type="button" class="xemrep-rpbv"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                        </table>
+                                        
+                                        <table class="table table-hover" style="background-color: lightyellow">
+                                                <h5><strong>Báo cáo người dùng</strong></h5>
+                                                <tbody id="test_mucthu">
+                                                    <% REPRPND.forEach(function(data) { %>
+                                                        <tr id="chua_xem" class="table-row" data-href='#'>
+                                                            <td class="col-sm-3"><strong><i class="fas fa-user"></i>    <%= data.hoten %></strong></td>
+                                                            <td class="col-sm-3"><strong>-      <%= data.tieude %></strong></td>
+                                                            <td class="col-sm-3"><strong><i class="fas fa-reply"></i>  Trả lời cho</strong>     <%= data.chuthich.substring(0, 50) %>...</td>
+                                                            <td class="col-sm-3"><%= data.created_at%></td>
+                                                            <td class="button"><button type="button" class="xoarep-rpnd" id="<%= data.id %>"><i style="font-size:19px;" class="fa fa-trash"></i></button></td>
+                                                            <td class="button"><button id="<%= data.id %>" type="button" class="xemrep-rpnd"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>
+                                                        </tr>
+                                                        <% }) %>
+                                                </tbody>
+                                                </table>
+                                                
+                                                <table class="table table-hover" style="background-color: lightyellow">
+                                                        <h5><strong>Báo cáo người dùng</strong></h5>
+                                                        <tbody id="test_mucthu">
+                                                            <% REPRQ.forEach(function(data) { %>
+                                                                <tr id="chua_xem" class="table-row" data-href='#'>
+                                                                    <td class="col-sm-3"><strong><i class="fas fa-user"></i>    <%= data.hoten %></strong></td>
+                                                                    <td class="col-sm-3"><strong>-      <%= data.tieude %></strong></td>
+                                                                    <td class="col-sm-3"><strong><i class="fas fa-reply"></i>  Trả lời cho</strong>     <%= data.noidung.substring(0, 50) %>...</td>
+                                                                    <td class="col-sm-3"><%= data.created_at%></td>
+                                                                    <td class="button"><button type="button" class="xoarep-rq" id="<%= data.id %>"><i style="font-size:19px;" class="fa fa-trash"></i></button></td>
+                                                                    <td class="button"><button id="<%= data.id %>" type="button" class="xemrep-rq"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                        </table>
+                                    </div>
+                        </div>
+            </div>
+            <input id="idkdv" value="<%= IDKDV %>" hidden>
+    </body>
+    <script>
+            $(document).ready(function(){
+            $('#thudagui').addClass('active');
+            });
+        
+            $(document).on('click', '.xoarep-rpbv', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                $.get('../ajax/'+idkdv+'/xoareply_rpbv/'+rpid,function(data){
+            
+        })
+        alert('Đã xóa thư trả lời');
+        window.location.reload();
+            });
+        
+            $(document).on('click', '.xoarep-rpnd', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                $.get('../ajax/'+idkdv+'/xoareply_rpnd/'+rpid,function(data){
+            
+        })
+        alert('Đã xóa thư trả lời');
+        window.location.reload();
+            });
+        
+            $(document).on('click', '.xoarep-rq', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                $.get('../ajax/'+idkdv+'/xoareply_rq/'+rpid,function(data){
+            
+        })
+        alert('Đã xóa thư trả lời');
+        window.location.reload();
+            });
+        
+            $(document).on('click', '.xemrep-rpbv', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                    
+                window.location = '../'+idkdv+'/xemreply_rpbv/'+rpid+'';
+            });
+        
+            $(document).on('click', '.xemrep-rpnd', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                
+                window.location = '../'+idkdv+'/xemreply_rpnd/'+rpid+'';
+            });
+        
+            $(document).on('click', '.xemrep-rq', function(){
+                var rpid =  $(this).attr("id");
+                var idkdv = $('#idkdv').val();
+                
+                window.location = '../'+idkdv+'/xemreply_rq/'+rpid+'';
+            });
+            </script>
+</html>

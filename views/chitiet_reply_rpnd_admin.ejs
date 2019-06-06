@@ -1,0 +1,153 @@
+<html>
+    <head>
+            <title>Thư gửi admin</title>
+            <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+      <link rel='stylesheet' href='/css/style.css' />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+    <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+    <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+    <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+    </head>
+    <body>
+            <nav class="navbar navbar-inverse" style="margin-bottom: 0">
+                    <div class="container-fluid">
+                      <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span> 
+                        </button>
+                        <a class="navbar-brand" href="#">Coyome Moderators Dashboard</a>
+                      </div>
+                      <div class="collapse navbar-collapse" id="myNavbar">
+                        <ul class="nav navbar-nav">
+                          
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                          
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                  <h3 style="color:black;font-weight: bold"><i class="fas fa-info-circle" aria-hidden="true" style="background-color: white;color: black"></i> Chi tiết thư gửi Admin</h3>
+                  <div class="container-fluid" style="background-color:burlywood">
+                    <div class="col-md-2">
+                        <div class="form-group" style="margin: 10px 0 0 0">
+                          
+                          </div>
+                          <div class="khung_select" style="margin-top: 50px;">
+                              <a href="/./kdv/<%= IDKDV %>/hopthu"><h5 id="hopthuden"><i class="fas fa-archive"></i>     Hộp thư đến</h5></a>
+                              <a class="thudagui" href="/./kdv/<%= IDKDV %>/thudagui"><h5 id="thudagui"><i class="fa fa-paper-plane"></i>     Thư đã gửi</h5></a>
+                              <a class="thungrac" href="/./kdv/<%= IDKDV %>/thungrac"><h5 id="thungrac"><i class="fa fa-trash"></i>     Thùng rác</h5></a>
+                              <a class="thugansao" href="/./kdv/<%= IDKDV %>/thugansao"><h5 id="thugansao"><i class="fas fa-star"></i>     Thư gắn sao</h5></a>
+                              <a class="thuguiad" href="../<%= IDKDV %>/thuguiad"><h5 id="thuguiad"><i class="fas fa-audio-description"></i>     Thư đã gửi Admin</h5></a>
+                            </div>
+                    </div>
+                    <div class="col-md-10" style="background-color:white">
+                            <div class="tool-box">
+                                    <button id="" class="turn-b" type="button"><i style="font-size:19px" class="fas fa-arrow-left"></i></button>
+                                    <% if(IDKDV == THUREP.id_user) { %>
+                                    <button id="<%= THUREP.id %>" class="xoa_rply_rpbv_chitiet" type="button"><i style="font-size:19px" class="fas fa fa-trash"></i></button>
+                                    <% } %>
+                                </div>
+                                <div class="title-reply-rpbv">
+                                        <h5 style="padding: 10px 5px;float: left"><strong><i class="fas fa-user"></i>       <%= THUREP.hoten %>          <i style="font-size:19px;color: crimson" class="fas fa-arrow-alt-circle-right"></i>                   Hộp thư Admin</strong>
+                                        <h6 style="float:right;"><i class="fas fa-clock"></i>         <%= THUREP.created_at %></h6>
+                                        </h5>
+                                        <h6 style="float:left;width: 100%;margin-left: 30px">-      Tới <i class="fa fa-envelope"></i>             Admin</h6>
+                                </div>
+                                <div class="content-reply-rpbv" style="border-top: steelblue solid 1px;padding-top:10px;float: left;width: 100%">
+                                    <h4 style="width: 100%"><strong><%= THUREP.tieude %></strong></h4>
+                                    <h5 style="width: 100%"><strong>Nội dung</strong></h5>
+                                    <div class="noidung_test_rpbv" style="margin-left: 10%;padding: 10px 15px">
+                                            <input id="test_noidung" value="<%= THUREP.noidung %>" hidden>
+                                    </div>
+                                    <h6 id="xemchitiet"><a target="_blank" rel="noopener noreferrer" href="/./kdv/<%= IDKDV %>/bcnd/<%= RPBV.id %>"><i class="fas fa-arrows-alt"></i>      Xem chi tiết báo cáo người dùng</a></h6>
+                                </div>
+                                <div class="traloi" style="border-top: lightcoral 1px solid;float: left">
+                                    <h5><strong>Thư gửi</strong> cho <strong>Admin</strong> theo <strong>báo cáo</strong> từ <i class="fas fa-user"></i> <strong><%= RPBV.user_rp %></strong> đối với <i class="fas fa-user"></i> <strong><%= RPBV.user_birp %></strong></h5>
+                                </div>
+                                <div class="thutraloi_dc" style="border-top: teal 1px solid;float:right;width: 100%">
+                                    <h5 style="float: right">Các thư đồng gửi khác</h5>
+                                    <% THUREP_DC.forEach(function(data){ %>
+                                        <% if(THUREP.id == data.id) { %>
+
+                                            <% } else { %>
+                                        <div id="noidung_test" class="noidung_test" style="background-color: lightgreen">
+                                        <h6 id="nguoigui_thurep"><strong><i class="fas fa-user"></i>      <%= data.hoten %>     <i style="font-size: 15px" class="fas fa-arrow-alt-circle-right"></i>        <i class="fas fa-user"></i>        <%= RPBV.hoten %></strong></h6>
+                                              
+                                                <h6 style="float: left"><strong>-        <i style="font-size: 15px" class="far fa-smile"></i>         <%= data.tieude %></strong></h6>
+                                                <h6 style="float: left; margin-left: 10px">-      <i style="font-size: 15px" class="fas fa-clock"></i>      <%= data.created_at %></h6>
+                                                <% if(IDKDV == data.id_user) { %>
+                                                <button class="xoa-reply-rpbv" id="<%= data.id %>" style="float: right;margin-right:20px " type="button"><i style="font-size: 19px" class="fa fa-trash"></i></button>
+                                                <% } %>
+                                                <button class="xem-reply-rpbv" id="<%= data.id %>" style="float: right; margin-right:20px" type="button"><i style="font-size: 19px" class="fas fa-eye"></i></button>
+                                            </div>
+                                            <% } %>
+                                                <% }) %>
+                                        
+                                </div>
+                    </div>
+                    </div>
+                    <input id="idkdv" value="<%= IDKDV %>" hidden>
+                    <input id="rpid" value="<%= RPBV.id %>" hidden>
+<script>
+var $log = $('.noidung_test_rpbv'),
+str = $('#test_noidung').val();
+// alert(str);
+html = $.parseHTML(str);
+nodeNames = [];
+// Append the parsed HTML
+$log.append( html );
+// Gather the parsed HTML's node names
+$.each( html, function( i, el ) {
+  nodeNames[ i ] = "<li>" + el.nodeName + "</li>";
+});
+                    
+$(document).on('click','.xoa-reply-rpbv',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/xoareply_rpnd_admin/'+rpid,function(data){
+    
+  })
+
+    alert('Đã xóa thư trả lời');
+    window.location.reload();
+  });
+
+  $(document).on('click','.xem-reply-rpbv',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    
+    window.location = "/./kdv/" + idkv + '/xemreply_rpnd_admin/' + rpid;
+  });
+
+  $(document).on('click','.xoa_rply_rpbv_chitiet',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    var rpid_des = $('#rpid').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/xoareply_rpnd_chitiet_admin/'+rpid,function(data){
+    
+  })
+
+    alert('Đã xóa thư trả lời');
+    window.location = '/./kdv/'+idkv+'/bcnd/'+rpid_des;
+  });
+  $(document).on('click','.turn-b',function(){
+    var idkv = $('#idkdv').val();
+    window.location = '/./kdv/'+idkv+'/thuguiad';
+  }); 
+</script>
+    </body>
+</html>

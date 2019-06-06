@@ -1,0 +1,456 @@
+<html>
+    <head>
+            <title>Trang chủ Admin</title>
+            <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+      <link rel='stylesheet' href='/css/style.css' />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+    <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+    <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+    <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                <h4 style="float:none">Admin Dashboard</h4>
+                <ul>
+                    <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                    <li><a href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                    <li><a href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                    <li><a href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                    <li><a href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10" style="padding: 0;margin:0;height: 100%;background-color:turquoise">
+                <div class="head-content" style="position: relative;padding: 0;margin:0;height: 200px;width: 100%;background:url(/img/test_4.png) no-repeat center">
+                <h5 class="xinchao">Trang chủ Admin,<strong> Xin chào </strong><%= TT_AD.hoten %>, <a href="./logout">Đăng xuất</a></h5>
+            </div>
+            <div class="middle-content">
+                <h5 class="head-middle"><strong><i style="font-size: 19px" class="fas fa-address-card"></i>    Bảng thông tin người dùng</strong></h5>
+                <select id="filter" class="form-control" style="margin-bottom: 10px;width: 15%;float: right">
+                    <option value="0">Loại người dùng</option>
+                    <% LOAIND.forEach(function(data){ %>
+                        <option value="<%= data.id %>"><%= data.ten_gr %></option>
+                        <% }) %>
+                </select>
+                <div align="center">
+                    <input type="text" name="search" id="search" class="form-control" placeholder="Tìm kiếm" style="width: 60%">
+                </div>
+                <div style="overflow:scroll;height:345px;width:100%;overflow:auto;background-color: whitesmoke">
+                <table class="table2 table-striped table-hover table-bordered" id="user_table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên đăng nhập</th>
+                            <th>Họ tên</th>
+                            <th>Số bài đăng</th>
+                            <th>Số được xét</th>
+                            <th>Số điểm</th>
+                            <th>Loại người dùng</th>
+                            <th>Ngày tham gia</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="test_loc" style="background-color:tan">
+                        <% var n = 1; %>
+                        <% TT_ND.forEach(function(data){ %>
+                            <tr>
+                                <td style="text-align: center"><%= n++ %></td>
+                                <td><%= data.ten_dn %></td>
+                                <td><%= data.hoten %></td>
+                                <td style="text-align: center"><%= data.tong_bv %></td>
+                                <% if(data.daxet == 0) { %>
+                                    <td>0</td>
+                                    <td>Chưa có bài được xét</td>
+                                    <% } else { %>
+                                        <td style="text-align: center"><%= data.daxet %></td>
+                                        <td style="text-align: center"><strong style="color: red"><%= Number((data.thongqua/data.daxet).toFixed(1)) %></strong></td>
+                                        <% } %>
+                                        <td><%= data.ten_gr %></td>
+                                        <td><%= data.created_at %></td>
+                                        
+                                        <td><button id="<%= data.id %>" class="xem_chitiet" type="button"><i style="font-size: 19px" class="fas fa-eye"></i></button></td>
+                                        <% if(data.ten_gr == 'Admin') { %>
+                                            <% } else { %>
+                                        <td><button id="<%= data.id %>" class="xoa" type="button"><i style="font-size: 19px" class="fa fa-trash"></i></button></td>
+                                                <% } %>
+                                    </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+        <div class="col-md-2" style="background-color: bisque">
+            <h5><strong>Thống kê người dùng</strong></h5>
+        </div>
+        <div class="col-md-10" style="border-top: brown 2px solid;margin-top:10px">
+        <h5><strong>Thống kê loại người dùng</strong></h5>
+        <div class="col-sm-4">
+        <div id="doughnutChart" class="chart"></div>
+    </div>
+    <div class="col-sm-3">
+        <p><strong style="font-size: 19px;color:#2C3E50">&#9632;</strong> <strong>Quản trị viên: </strong><%= THONGSO.admin %></p>
+        <p><strong style="font-size: 19px;color:#FC4349">&#9632;</strong> <strong>Kiểm duyệt viên: </strong><%= THONGSO.kdv %></p>
+        <p><strong style="font-size: 19px;color:#6DBCDB">&#9632;</strong> <strong>Chuyên viết bài: </strong><%= THONGSO.cvb %></p>
+        <p><strong style="font-size: 19px;color:#F7E248">&#9632;</strong> <strong>Thành viên: </strong><%= THONGSO.thanhvien %></p>
+        <input id='admin' value="<%= THONGSO.admin %>" hidden>
+        <input id='kdv' value="<%= THONGSO.kdv %>" hidden>
+        <input id='cvb' value="<%= THONGSO.cvb %>" hidden>
+        <input id='thanhvien' value="<%= THONGSO.thanhvien %>" hidden>
+        <% var admin = parseFloat(THONGSO.admin); %>
+        <% var kdv = parseFloat(THONGSO.kdv); %>
+        <% var cvb = parseFloat(THONGSO.cvb); %>
+        <% var thanhvien = parseFloat(THONGSO.thanhvien); %>
+    </div>
+    <div class="col-sm-5" style="background-color: crimson;text-align: center">
+        
+            <h4><i style="color: yellow" class="fas fa-star"></i><strong> Tổng số người dùng</strong></h4>
+        <p style="background-color: white;padding:10px 10px;font-size: 24px"><strong><%= admin + kdv + cvb + thanhvien %></strong></p>
+    </div>
+        </div>
+        <div class="col-md-2" style="background-color: cadetblue">
+            <h5><strong>Người dùng bị chặn</strong></h5>
+        </div>
+        <div class="col-md-10" style="margin-top: 10px;border-top: darkgoldenrod 2px solid">
+            <div style="overflow:scroll;height:250px;width:100%;overflow:auto;background-color: whitesmoke">
+              <% TT_ND.forEach(function(data){ %>
+                <% if(data.trangthai == 1){ %>
+                <div class="col-sm-3" style="margin-top: 20px;text-align: center">
+                <img src="/img/<%= data.avatar %>" style="object-fit: cover;width:100px;height:100px;border-radius: 50%">
+                <p><strong><%= data.hoten %></strong></p>
+              </div>
+            <% } %>
+                <% }) %>
+              </div>
+        </div>
+        </div>
+        
+    </body>
+    <script>
+        $(document).ready(function(){
+            $('#db_nd').addClass('selected');
+        })
+
+    $(document).on('click','.xem_chitiet',function(){
+        var id_nd = $(this).attr('id');
+        
+        window.location = './xemchitiet/'+id_nd+'';
+    });
+
+    $(document).on('change','#filter',function(){
+        var id_loaind = $(this).val();
+        if(id_loaind == 0){
+            window.location.reload(false);
+        }
+        else
+        $.get("./ajax_admin/filter/"+id_loaind,function(data){
+            
+            var showFilter = $('#test_loc');
+            showFilter.html(data);
+        });
+    });
+
+    $(document).on('click','.xoa',function(){
+        var id_nd = $(this).attr('id');
+        if(confirm('Bạn có chắc chắn muốn xóa người dùng')){
+        $.get('./ajax_admin/xoand_chitiet/'+id_nd,function(){
+
+        })
+        alert('Đã xóa người dùng');
+        window.location.reload(false);
+    }
+    });
+
+    //test search
+
+    $(document).ready(function(){
+    $('#search').keyup(function(){
+        search_table($(this).val());
+    });
+    function search_table(value){
+        $('#user_table tbody tr').each(function(){
+            var found = 'false';
+            $(this).each(function(){
+                if($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0)
+                {
+                    found = 'true';
+                }
+            });
+            if(found == 'true'){
+                $(this).show();
+            }
+            else{
+                $(this).hide();
+            }
+        });
+    }
+})
+
+
+
+//test nữa này
+
+$(function(){
+    var admin = parseFloat($('#admin').val());
+    var kdv = parseFloat($('#kdv').val());
+    var cvb = parseFloat($('#cvb').val());
+    var thanhvien = parseFloat($('#thanhvien').val());
+  $("#doughnutChart").drawDoughnutChart([
+    { title: "Quản trị viên",         value : admin,  color: "#2C3E50" },
+    { title: "Kiểm duyệt viên", value:  kdv,   color: "#FC4349" },
+    { title: "Chuyên viết bài",      value:  cvb,   color: "#6DBCDB" },
+    { title: "Thành viên",        value : thanhvien,   color: "#F7E248" },
+  ]);
+});
+/*!
+ * jquery.drawDoughnutChart.js
+ * Version: 0.4.1(Beta)
+ * Inspired by Chart.js(http://www.chartjs.org/)
+ *
+ * Copyright 2014 hiro
+ * https://github.com/githiro/drawDoughnutChart
+ * Released under the MIT license.
+ * 
+ */
+;(function($, undefined) {
+  $.fn.drawDoughnutChart = function(data, options) {
+    var $this = this,
+      W = $this.width(),
+      H = $this.height(),
+      centerX = W/2,
+      centerY = H/2,
+      cos = Math.cos,
+      sin = Math.sin,
+      PI = Math.PI,
+      settings = $.extend({
+        segmentShowStroke : true,
+        segmentStrokeColor : "#0C1013",
+        segmentStrokeWidth : 1,
+        baseColor: "rgba(0,0,0,0.5)",
+        baseOffset: 4,
+        edgeOffset : 10,//offset from edge of $this
+        percentageInnerCutout : 75,
+        animation : true,
+        animationSteps : 90,
+        animationEasing : "easeInOutExpo",
+        animateRotate : true,
+        tipOffsetX: -8,
+        tipOffsetY: -45,
+        tipClass: "doughnutTip",
+        summaryClass: "doughnutSummary",
+        summaryTitle: "TOTAL:",
+        summaryTitleClass: "doughnutSummaryTitle",
+        summaryNumberClass: "doughnutSummaryNumber",
+        beforeDraw: function() {  },
+        afterDrawed : function() {  },
+        onPathEnter : function(e,data) {  },
+        onPathLeave : function(e,data) {  }
+      }, options),
+      animationOptions = {
+        linear : function (t) {
+          return t;
+        },
+        easeInOutExpo: function (t) {
+          var v = t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
+          return (v>1) ? 1 : v;
+        }
+      },
+      requestAnimFrame = function() {
+        return window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
+          function(callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+      }();
+
+    settings.beforeDraw.call($this);
+
+    var $svg = $('<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>').appendTo($this),
+        $paths = [],
+        easingFunction = animationOptions[settings.animationEasing],
+        doughnutRadius = Min([H / 2,W / 2]) - settings.edgeOffset,
+        cutoutRadius = doughnutRadius * (settings.percentageInnerCutout / 100),
+        segmentTotal = 0;
+
+    //Draw base doughnut
+    var baseDoughnutRadius = doughnutRadius + settings.baseOffset,
+        baseCutoutRadius = cutoutRadius - settings.baseOffset;
+    $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+      .attr({
+        "d": getHollowCirclePath(baseDoughnutRadius, baseCutoutRadius),
+        "fill": settings.baseColor
+      })
+      .appendTo($svg);
+
+    //Set up pie segments wrapper
+    var $pathGroup = $(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
+    $pathGroup.attr({opacity: 0}).appendTo($svg);
+
+    //Set up tooltip
+    var $tip = $('<div class="' + settings.tipClass + '" />').appendTo('body').hide(),
+        tipW = $tip.width(),
+        tipH = $tip.height();
+
+    //Set up center text area
+    var summarySize = (cutoutRadius - (doughnutRadius - cutoutRadius)) * 2,
+        $summary = $('<div class="' + settings.summaryClass + '" />')
+                   .appendTo($this)
+                   .css({ 
+                     width: summarySize + "px",
+                     height: summarySize + "px",
+                     "margin-left": -(summarySize / 2) + "px",
+                     "margin-top": -(summarySize / 2) + "px"
+                   });
+    var $summaryTitle = $('<p class="' + settings.summaryTitleClass + '">' + settings.summaryTitle + '</p>').appendTo($summary);
+    var $summaryNumber = $('<p class="' + settings.summaryNumberClass + '"></p>').appendTo($summary).css({opacity: 0});
+
+    for (var i = 0, len = data.length; i < len; i++) {
+      segmentTotal += data[i].value;
+      $paths[i] = $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+        .attr({
+          "stroke-width": settings.segmentStrokeWidth,
+          "stroke": settings.segmentStrokeColor,
+          "fill": data[i].color,
+          "data-order": i
+        })
+        .appendTo($pathGroup)
+        .on("mouseenter", pathMouseEnter)
+        .on("mouseleave", pathMouseLeave)
+        .on("mousemove", pathMouseMove);
+    }
+
+    //Animation start
+    animationLoop(drawPieSegments);
+
+    //Functions
+    function getHollowCirclePath(doughnutRadius, cutoutRadius) {
+        //Calculate values for the path.
+        //We needn't calculate startRadius, segmentAngle and endRadius, because base doughnut doesn't animate.
+        var startRadius = -1.570,// -Math.PI/2
+            segmentAngle = 6.2831,// 1 * ((99.9999/100) * (PI*2)),
+            endRadius = 4.7131,// startRadius + segmentAngle
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,
+          'A', doughnutRadius, doughnutRadius, 0, 1, 1, endX, endY,//Draw outer circle
+          'Z',//Close path
+          'M', startX2, startY2,//Move pointer
+          'A', cutoutRadius, cutoutRadius, 0, 1, 0, endX2, endY2,//Draw inner circle
+          'Z'
+        ];
+        cmd = cmd.join(' ');
+        return cmd;
+    };
+    function pathMouseEnter(e) {
+      var order = $(this).data().order;
+      $tip.text(data[order].title + ": " + data[order].value)
+          .fadeIn(200);
+      settings.onPathEnter.apply($(this),[e,data]);
+    }
+    function pathMouseLeave(e) {
+      $tip.hide();
+      settings.onPathLeave.apply($(this),[e,data]);
+    }
+    function pathMouseMove(e) {
+      $tip.css({
+        top: e.pageY + settings.tipOffsetY,
+        left: e.pageX - $tip.width() / 2 + settings.tipOffsetX
+      });
+    }
+    function drawPieSegments (animationDecimal) {
+      var startRadius = -PI / 2,//-90 degree
+          rotateAnimation = 1;
+      if (settings.animation && settings.animateRotate) rotateAnimation = animationDecimal;//count up between0~1
+
+      drawDoughnutText(animationDecimal, segmentTotal);
+
+      $pathGroup.attr("opacity", animationDecimal);
+
+      //If data have only one value, we draw hollow circle(#1).
+      if (data.length === 1 && (4.7122 < (rotateAnimation * ((data[0].value / segmentTotal) * (PI * 2)) + startRadius))) {
+        $paths[0].attr("d", getHollowCirclePath(doughnutRadius, cutoutRadius));
+        return;
+      }
+      for (var i = 0, len = data.length; i < len; i++) {
+        var segmentAngle = rotateAnimation * ((data[i].value / segmentTotal) * (PI * 2)),
+            endRadius = startRadius + segmentAngle,
+            largeArc = ((endRadius - startRadius) % (PI * 2)) > PI ? 1 : 0,
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,//Move pointer
+          'A', doughnutRadius, doughnutRadius, 0, largeArc, 1, endX, endY,//Draw outer arc path
+          'L', startX2, startY2,//Draw line path(this line connects outer and innner arc paths)
+          'A', cutoutRadius, cutoutRadius, 0, largeArc, 0, endX2, endY2,//Draw inner arc path
+          'Z'//Cloth path
+        ];
+        $paths[i].attr("d", cmd.join(' '));
+        startRadius += segmentAngle;
+      }
+    }
+    function drawDoughnutText(animationDecimal, segmentTotal) {
+      $summaryNumber
+        .css({opacity: animationDecimal})
+        .text((segmentTotal * animationDecimal).toFixed(1));
+    }
+    function animateFrame(cnt, drawData) {
+      var easeAdjustedAnimationPercent =(settings.animation)? CapValue(easingFunction(cnt), null, 0) : 1;
+      drawData(easeAdjustedAnimationPercent);
+    }
+    function animationLoop(drawData) {
+      var animFrameAmount = (settings.animation)? 1 / CapValue(settings.animationSteps, Number.MAX_VALUE, 1) : 1,
+          cnt =(settings.animation)? 0 : 1;
+      requestAnimFrame(function() {
+          cnt += animFrameAmount;
+          animateFrame(cnt, drawData);
+          if (cnt <= 1) {
+            requestAnimFrame(arguments.callee);
+          } else {
+            settings.afterDrawed.call($this);
+          }
+      });
+    }
+    function Max(arr) {
+      return Math.max.apply(null, arr);
+    }
+    function Min(arr) {
+      return Math.min.apply(null, arr);
+    }
+    function isNumber(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    function CapValue(valueToCap, maxValue, minValue) {
+      if (isNumber(maxValue) && valueToCap > maxValue) return maxValue;
+      if (isNumber(minValue) && valueToCap < minValue) return minValue;
+      return valueToCap;
+    }
+    return $this;
+  };
+})(jQuery);
+    </script>
+</html>

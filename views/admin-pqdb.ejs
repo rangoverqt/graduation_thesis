@@ -1,0 +1,205 @@
+<html>
+    <head>
+            <title>Phân quyền Admin</title>
+            <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+      <link rel='stylesheet' href='/css/style.css' />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+    <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+    <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+    <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+    </head>
+    <body>
+            <div class="container-fluid">
+                    <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                        <h4 style="float:none">Admin Dashboard</h4>
+                        <ul>
+                            <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                            <li><a id="db_bv" href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                            <li><a href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                            <li><a id="pq_db" href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                            <li><a href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-10">
+                        <h5><strong><i class="fas fa-level-up-alt"></i></strong> Trang phân quyền người dùng</h5>
+                        <div class="col-sm-6">
+                            <h5><strong><i class="fas fa-audio-description"></i> Lực lượng Quản trị viên</strong></h5>
+                            <% USER.forEach(function(data){ %>
+                                <% if(data.id_gr == 2){ %>
+                                    <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                        
+                                    <div class="col-sm-2" style="margin-top: 10px;">
+                                            <img src="/img/<%= data.avatar %>" style="object-fit: cover;width:60px;height:60px;border-radius: 50%">
+                                    </div>
+                                    <div class="col-sm-10" style="margin-top: 10px;border-bottom:saddlebrown 2px solid">
+                                    <p><strong><i class="fas fa-user"></i> <%= data.hoten %></strong></p>
+                                    <p><strong><i class="fas fa-sign-in-alt"></i> <%= data.ten_dn %></strong></p>
+                                    <p>Tham gia vào <i><%= data.created_at %></i></p>
+                                </div>
+                                    </div>
+                                
+                                    <% } %>
+                                <% }) %>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5><strong><i class="fas fa-medal"></i> Thành viên được đề cử</strong></h5>
+                            <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                <% DECU.forEach(function(data){ %>
+                                <div class="voteup">
+
+                                    <p><strong><i class="fas fa-audio-description"></i> <%= data.ngdecu %></strong> - <i class="fas fa-medal"></i> Đã đề cử - <i class="fas fa-user"></i> <%= data.duocdecu %> <button id="<%= data.idduocdecu %>" class="bo_decu"><strong>X</strong></button></p>
+                                    <% if(data.vitri == 1){ %>
+                                    <p><strong><i class="fas fa-map-marker-alt"></i> Vị trí: </strong><i class="fas fa-pencil-alt"></i> Chuyên viết bài</p>
+                                    <% } else { %>
+                                        <p><strong><i class="fas fa-map-marker-alt"></i> Vị trí: </strong><i class="fas fa-shield-alt"></i> Kiểm duyệt viên</p>
+                                        <% } %>
+                                    <p>Vào <i><%= data.created_at %></i></p>
+                                </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <h5><strong><i class="fas fa-user"></i> Các thành viên khác</strong></h5>
+                        <div align="center" style="float: left;width: 60%">
+                                <input type="text" name="search" id="search" class="form-control" placeholder="Tìm kiếm" style="width: 60%">
+                            </div>
+                            <select id="loc_phanquyen" class="form-control" style="width: 30%;float:right">
+                                <option value="k">Loại người dùng</option>
+                                <% LOAIND.forEach(function(data){ %>
+                                    <% if(data.ten_gr != 'Admin'){ %>
+                                        <option value="<%= data.id %>"><%= data.ten_gr %></option>
+                                        <% } %>
+                                    <% }) %>
+                            </select>
+                        <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                        <table style="width: 100%" class="table1 table-bordered table-striped table-hover" id="phanquyen_table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Họ tên</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Loại người dùng</th>
+                                    <th>Đề cử</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="show_loc">
+                                <% var n = 1; %>
+                                <% USER.forEach(function(data){ %>
+                                    <% if(data.id_gr != 2) { %>
+                                        <tr>
+                                        <td style="text-align: center"><%= n++ %></td>
+                                        <td><%= data.hoten %></td>
+                                        <td><%= data.ten_dn %></td>
+                                        <td><%= data.ngaysinh.toDateString() %></td>
+                                        <td style="text-align: center"><%= data.ten_gr %></td>
+                                        <% if(data.trangthai == 2){ %>
+                                            <td style="text-align: center"><i style="font-size: 19px" class="fas fa-star"></i></td>
+                                            <% } else { %>
+                                                <td></td>
+                                                <% } %>
+                                        <td style="text-align: center"><button id="<%= data.id %>" class="phanquyen" type="button"><strong>Phân quyền</strong></button></td>
+                                        
+                                    </tr>
+                                        <% } %>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        </div>
+                        <div id="show-form" style="border-top: burlywood 2px solid;margin-top:10px">
+
+                            </div>
+                    </div>
+                    </div>
+    </body>
+    <script>
+$(document).on('click','.bo_decu',function(){
+    var idnd = $(this).attr('id');
+    if(confirm('Bạn chắc muốn bỏ đề cử người dùng này ?')){
+        $.get('./ajax_admin/bo_decu/'+idnd,function(){
+
+        })
+    }
+    alert('Đã bỏ đề cử người dùng');
+    window.location.reload();
+})
+
+$(document).ready(function(){
+    $('#pq_db').addClass('selected');
+});
+
+$(document).on('change','#loc_phanquyen',function(){
+    var idnd = $(this).val();
+    // alert(idnd);
+    if(idnd == 'k'){
+        window.location.reload(false);
+    }
+    else{
+        $.get('./ajax_admin/loc_phanquyen/'+idnd,function(data){
+            var shown = $('#show_loc');
+            shown.html(data);
+        })
+    }
+});
+
+$(document).on('click','.phanquyen',function(){
+    var idnd = $(this).attr('id');
+    $.get('./ajax_admin/show_formpq/'+idnd,function(data){
+        var shown = $('#show-form');
+        shown.html(data);
+    })
+});
+
+$(document).on('click','.huybo',function(){
+    $('#show-form').empty();
+});
+
+$(document).on('click','.dongy',function(){
+    var idcv = $('#chon_pq').val();
+    var idnd = $('#test_idnd').val();
+    // alert(idcv);
+    if(confirm('Bạn có chắc muốn phân quyền người dùng này')){
+    $.get('./ajax_admin/'+idcv+'/phanquyen_ngdung/'+idnd,function(){
+
+    });
+    alert('Đã cập nhật người dùng');
+    window.location.reload();
+}
+})
+
+//test search
+    $(document).ready(function(){
+    $('#search').keyup(function(){
+        search_table($(this).val());
+    });
+    function search_table(value){
+        $('#phanquyen_table tbody tr').each(function(){
+            var found = 'false';
+            $(this).each(function(){
+                if($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0)
+                {
+                    found = 'true';
+                }
+            });
+            if(found == 'true'){
+                $(this).show();
+            }
+            else{
+                $(this).hide();
+            }
+        });
+    }
+})
+
+    </script>
+</html>

@@ -1,0 +1,454 @@
+<html>
+        <head>
+                <title>Xem chi tiết Admin</title>
+                <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+          <link rel='stylesheet' href='/css/style.css' />
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+        <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+        <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+        <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+        </head>
+        <body>
+                <div class="container-fluid">
+                        <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                            <h4 style="float:none">Admin Dashboard</h4>
+                            <ul>
+                                <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                                <li><a id="db_bv" href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                                <li><a href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                                <li><a href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                                <li><a href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-10">
+                                <img src="/img/<%= BAIVIET.des_pic %>" style="object-fit: cover;width:100%;height:250px">
+                                <div class="tool-box-1" style="width: 100%;">
+                                                <button class="turn-b"type="button"><i class="fas fa-arrow-left"></i></button>
+                                                <button id="<%= BAIVIET.id %>" class="xoa" type="button"><i class="fa fa-trash"></i></button>
+                                                
+                                            </div>
+                                <h5><strong>Chi tiết bài viết</strong></h5>
+                                <div class="col-sm-8"  style="border-right: cadetblue 2px solid">
+                                <p><strong>Tiêu đề: </strong> <%= BAIVIET.tieude %></p>
+                                <p style="text-align: justify"><strong>Nội dung: </strong><%= BAIVIET.noidung %></p>
+                        </div>
+                        <div class="col-sm-4">
+                                <p><strong>Trích dẫn: </strong><%= BAIVIET.trichdan %></p>
+                                <p><strong>Keyword: </strong><%= BAIVIET.keyword %></p>
+                                <p><strong>Đăng bởi:</strong><a href="../xemchitiet/<%= BAIVIET.id_nguoidang %>"><img src="/img/<%= BAIVIET.avatar %>" style="object-fit: cover;width:50px;height:50px;border-radius: 50%"> <%= BAIVIET.hoten %></a></p>
+                                <p><strong>Trong: </strong> <%= BAIVIET.ten_cd %></p>
+                                <p>Vào <i><%= BAIVIET.created_at %></i></p>
+                                <div class="" style="border-top: darkolivegreen 2px solid;margin-top: 10px;border-bottom: saddlebrown 2px solid">
+                                <h5><strong>Trạng thái bài viết</strong></h5>
+                                <% if(BAIVIET.da_xem == null || BAIVIET.restrict_area == null) { %>
+                                        <p><strong><i style="font-size: 19px;color:goldenrod" class="fas fa-question"></i> Bài viết chưa được xem qua</strong></p>
+                                        
+                                        <% } else if(BAIVIET.da_xem != null && BAIVIET.restrict_area == 0) { %>
+                                                <p><i style="font-size: 19px;color:green" class="fas fa-check"></i> <strong>Bài viết được </strong> <strong style="color: forestgreen">Thông qua</strong></p>
+                                                <p><i>Bởi: </i><a href="../xemchitiet/<%= DUYETBAI.id %>"> <img src="/img/<%= DUYETBAI.avatar %>" style="object-fit: cover;width:50px;height:50px;border-radius: 50%"> <%= DUYETBAI.hoten %></a></p>
+                                                
+                                                <% } else if(BAIVIET.da_xem != null && BAIVIET.restrict_area == 1) { %>
+                                                        <p><i style="font-size: 19px;color:red" class="fas fa-ban"></i> <strong>Bài viết bị </strong> <strong style="color: red">Từ chối</strong></p>
+                                                        <p><i>Bởi: </i><a href="../xemchitiet/<%= DUYETBAI.id %>"> <img src="/img/<%= DUYETBAI.avatar %>" style="object-fit: cover;width:50px;height:50px;border-radius: 50%"> <%= DUYETBAI.hoten %></a></p>
+                                                        <p><strong>Lý do từ chối: </strong></p>
+                                                        <ul>
+                                                                <% if(LYDODEC.ld_1 == 1) { %>
+                                                                        <li>Bài viết không phù hợp đề tài</li>
+                                                                <% } %>
+                                                                <% if(LYDODEC.ld_2 == 1) { %>
+                                                                        <li>Tiêu đề không phù hợp</li>
+                                                                        <% } %>
+                                                                        <% if(LYDODEC.ld_3 == 1) { %>
+                                                                                <li>Nội dung sai lệch, không hợp lý</li>
+                                                                                <% } %>
+                                                                                <% if(LYDODEC.ld_4 == 1) { %>
+                                                                                        <li>Trích dẫn sai nguồn</li>
+                                                                                        <% } %>
+                                                                                        <% if(LYDODEC.ld_5 == 1) { %>
+                                                                                                <li>Keyword sai</li>
+                                                                                                <% } %>
+                                                                                                <% if(LYDODEC.ld_khac != "undefined") { %>
+                                                                                                        <li><%= LYDODEC.ld_khac %></li>
+                                                                                                        <% } %>
+                                                        </ul>
+                                                        <% } %>
+                                <p></p>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="col-md-2" style="background-color: salmon">
+                                <h5><strong>Thông số tương tác</strong></h5>
+                        </div>
+                        <div class="col-md-10" style="border-top: tan 2px solid;margin-top: 10px">
+                                        <h5><strong>Lượt Vote/Bình luận</strong></h5>
+                                <div class="col-sm-6">
+                                <p><strong style="font-size: 19px;color:green">&#9650;</strong> Vote up</p>
+                                <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                 <% LUOTVOTE.forEach(function(data){ %>
+                                        <% if(data.loaivote == 0){ %>
+                                        <div class="voteup">
+                                        <p><strong><i style="font-size: 15px" class="fas fa-user"></i> <%= data.hoten %></strong> - <strong style="font-size: 15px;color:green">&#9650;</strong> - Vào <i><%= data.created_at %></i></p>
+                                        </div>
+                                        <% } %>
+                                        <% }) %>
+                                
+                                </div>
+                        </br>
+                                <p><strong style="font-size: 19px;color:red">&#9660;</strong>Vote down</p>
+                                <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                        <% LUOTVOTE.forEach(function(data){ %>
+                                                <% if(data.loaivote == 1){ %>
+                                                <div class="voteup">
+                                                <p><strong><i style="font-size: 15px" class="fas fa-user"></i> <%= data.hoten %></strong> - <strong style="font-size: 15px;color:red">&#9660;</strong> - Vào <i><%= data.created_at %></i></p>
+                                                </div>
+                                                <% } %>
+                                                <% }) %>      
+                                </div>
+                        </div>
+                        <div class="col-sm-6">
+                                <p><strong style="font-size: 19px;color: lightskyblue"><i class="fas fa-comments"></i> </strong> Lượt bình luận</p>
+                                <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                <% LUOTCMT.forEach(function(data){ %>
+                                        <div class="voteup">
+                                                <p><strong><i style="font-size: 15px" class="fas fa-user"></i> <%= data.hoten %></strong> - <strong style="font-size: 15px;color: mediumslateblue "><i class="fas fa-comments"></i></strong> - <%= data.noidung %> - Vào <i><%= data.created_at %></i></p>
+                                                </div>
+                                        <% }) %>
+                                </div>
+                        </br>
+                                <p><strong style="font-size: 19px;color:orangered"><i class="fas fa-flag"></i> </strong> Lượt báo cáo</p>
+                                <div style="overflow:scroll;height:200px;width:100%;overflow:auto;background-color: whitesmoke">
+                                <% LUOTRP.forEach(function(data){ %>
+                                        <% if(data.loai_rp == 1) { %>
+                                        <div class="voteup">
+                                                <p><strong><i style="font-size: 15px" class="fas fa-user"></i> <%= data.hoten %></strong> - <strong style="font-size: 15px;color: peru "><i class="fas fa-flag"></i></strong> -  <strong>Nội dung không phù hợp</strong> - <%= data.chuthich %> - Vào <i><%= data.created_at %></i></p>
+                                                </div>
+                                                <% } else { %>
+                                                        <div class="voteup">
+                                                                <p><strong><i style="font-size: 15px" class="fas fa-user"></i> <%= data.hoten %></strong> - <strong style="font-size: 15px;color: peru "><i class="fas fa-flag"></i></strong> - <strong> Hình ảnh không phù hợp</strong> - <%= data.chuthich %> - Vào <i><%= data.created_at %></i></p>
+                                                                </div>
+                                                        <% } %>
+                                        <% }) %>
+                                </div>
+                        </div>
+                        </div>
+                        <div class="col-md-2" style="background-color: silver">
+                                <h5><strong>Thông số bài viết</strong></h5>
+                        </div>
+                        <div class="col-md-10" style="border-top: steelblue 2px solid;margin-top:10px">
+                                <h5><strong>Thông số chi tiết</strong></h5>
+                                <div class="col-sm-4">
+                                        <div id="doughnutChart" class="chart"></div>
+                                </div>
+                                <div class="col-sm-3">
+                                        <p><strong style="font-size: 19px;color:#2C3E50">&#9632;</strong> <strong>Vote up: </strong><%= THONGSO.voteup %></p>
+                                        <p><strong style="font-size: 19px;color:#FC4349">&#9632;</strong> <strong>Vote down: </strong><%= THONGSO.votedown %></p>
+                                        <p><strong style="font-size: 19px;color:#6DBCDB">&#9632;</strong> <strong>Bình luận: </strong><%= THONGSO.cmt %></p>
+                                        <p><strong style="font-size: 19px;color:#F7E248">&#9632;</strong> <strong>Bị báo cáo: </strong><%= THONGSO.rpbv %></p>
+                                        <% var voteup = parseFloat(THONGSO.voteup); %>
+                                        <% var votedown = parseFloat(THONGSO.votedown); %>
+                                        <% var cmt = parseFloat(THONGSO.cmt); %>
+                                        <% var rpbv = parseFloat(THONGSO.rpbv); %>
+                                        <input id="voteup" value="<%= voteup %>" hidden>
+                                        <input id="votedown" value="<%= votedown %>" hidden>
+                                        <input id="cmt" value="<%= cmt %>" hidden>
+                                        <input id="rpbv" value="<%= rpbv %>" hidden>
+                                </div>
+                                <div class="col-sm-5">
+                                        <div style="background-color: tomato;text-align: center">
+                                                <h4 style="margin: 0;float:none;padding:10px 0"><strong><i style="color: yellow" class="fas fa-star"></i></strong> <strong style="color: white">Điểm bài viết</strong></h4>
+                                                <p style="font-size: 25px;background-color: white;border: tomato 2px solid;padding: 10px 0"><strong><%= voteup*2 + votedown*1 + cmt*2 - rpbv*5 %></strong></p>
+                                        </div>
+                                </div>
+                        </div>
+                        </div>
+        </body>
+        <script>
+        $(document).on('click','.turn-b',function(){
+                window.location = '../baiviet_nd';
+        })
+
+        $(document).on('click','.xoa',function(){
+                var idbv = $(this).attr('id');
+                // alert(idbv);
+                if(confirm('Bạn có chắc muốn xóa bài viết này ?')){
+                        $.get('../ajax_admin/xoa_bv'+idbv,function(){
+
+                        })
+                        alert('Đã xóa bài viết');
+                        window.location.reload(false);
+                }
+        })
+
+
+
+
+
+
+
+
+
+        //test
+        $(function(){
+                var voteup = parseFloat($('#voteup').val());
+                var votedown = parseFloat($('#votedown').val());
+                var cmt = parseFloat($('#cmt').val());
+                var rpbv = parseFloat($('#rpbv').val());
+  $("#doughnutChart").drawDoughnutChart([
+    { title: "Vote Up",         value : voteup,  color: "#2C3E50" },
+    { title: "Vote Down", value:  votedown,   color: "#FC4349" },
+    { title: "Bình luận",      value:  cmt,   color: "#6DBCDB" },
+    { title: "Báo cáo bài viết",        value : rpbv,   color: "#F7E248" },
+    
+  ]);
+});
+/*!
+ * jquery.drawDoughnutChart.js
+ * Version: 0.4.1(Beta)
+ * Inspired by Chart.js(http://www.chartjs.org/)
+ *
+ * Copyright 2014 hiro
+ * https://github.com/githiro/drawDoughnutChart
+ * Released under the MIT license.
+ * 
+ */
+;(function($, undefined) {
+  $.fn.drawDoughnutChart = function(data, options) {
+    var $this = this,
+      W = $this.width(),
+      H = $this.height(),
+      centerX = W/2,
+      centerY = H/2,
+      cos = Math.cos,
+      sin = Math.sin,
+      PI = Math.PI,
+      settings = $.extend({
+        segmentShowStroke : true,
+        segmentStrokeColor : "#0C1013",
+        segmentStrokeWidth : 1,
+        baseColor: "rgba(0,0,0,0.5)",
+        baseOffset: 4,
+        edgeOffset : 10,//offset from edge of $this
+        percentageInnerCutout : 75,
+        animation : true,
+        animationSteps : 90,
+        animationEasing : "easeInOutExpo",
+        animateRotate : true,
+        tipOffsetX: -8,
+        tipOffsetY: -45,
+        tipClass: "doughnutTip",
+        summaryClass: "doughnutSummary",
+        summaryTitle: "TOTAL:",
+        summaryTitleClass: "doughnutSummaryTitle",
+        summaryNumberClass: "doughnutSummaryNumber",
+        beforeDraw: function() {  },
+        afterDrawed : function() {  },
+        onPathEnter : function(e,data) {  },
+        onPathLeave : function(e,data) {  }
+      }, options),
+      animationOptions = {
+        linear : function (t) {
+          return t;
+        },
+        easeInOutExpo: function (t) {
+          var v = t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
+          return (v>1) ? 1 : v;
+        }
+      },
+      requestAnimFrame = function() {
+        return window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
+          function(callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+      }();
+
+    settings.beforeDraw.call($this);
+
+    var $svg = $('<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>').appendTo($this),
+        $paths = [],
+        easingFunction = animationOptions[settings.animationEasing],
+        doughnutRadius = Min([H / 2,W / 2]) - settings.edgeOffset,
+        cutoutRadius = doughnutRadius * (settings.percentageInnerCutout / 100),
+        segmentTotal = 0;
+
+    //Draw base doughnut
+    var baseDoughnutRadius = doughnutRadius + settings.baseOffset,
+        baseCutoutRadius = cutoutRadius - settings.baseOffset;
+    $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+      .attr({
+        "d": getHollowCirclePath(baseDoughnutRadius, baseCutoutRadius),
+        "fill": settings.baseColor
+      })
+      .appendTo($svg);
+
+    //Set up pie segments wrapper
+    var $pathGroup = $(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
+    $pathGroup.attr({opacity: 0}).appendTo($svg);
+
+    //Set up tooltip
+    var $tip = $('<div class="' + settings.tipClass + '" />').appendTo('body').hide(),
+        tipW = $tip.width(),
+        tipH = $tip.height();
+
+    //Set up center text area
+    var summarySize = (cutoutRadius - (doughnutRadius - cutoutRadius)) * 2,
+        $summary = $('<div class="' + settings.summaryClass + '" />')
+                   .appendTo($this)
+                   .css({ 
+                     width: summarySize + "px",
+                     height: summarySize + "px",
+                     "margin-left": -(summarySize / 2) + "px",
+                     "margin-top": -(summarySize / 2) + "px"
+                   });
+    var $summaryTitle = $('<p class="' + settings.summaryTitleClass + '">' + settings.summaryTitle + '</p>').appendTo($summary);
+    var $summaryNumber = $('<p class="' + settings.summaryNumberClass + '"></p>').appendTo($summary).css({opacity: 0});
+
+    for (var i = 0, len = data.length; i < len; i++) {
+      segmentTotal += data[i].value;
+      $paths[i] = $(document.createElementNS('http://www.w3.org/2000/svg', 'path'))
+        .attr({
+          "stroke-width": settings.segmentStrokeWidth,
+          "stroke": settings.segmentStrokeColor,
+          "fill": data[i].color,
+          "data-order": i
+        })
+        .appendTo($pathGroup)
+        .on("mouseenter", pathMouseEnter)
+        .on("mouseleave", pathMouseLeave)
+        .on("mousemove", pathMouseMove);
+    }
+
+    //Animation start
+    animationLoop(drawPieSegments);
+
+    //Functions
+    function getHollowCirclePath(doughnutRadius, cutoutRadius) {
+        //Calculate values for the path.
+        //We needn't calculate startRadius, segmentAngle and endRadius, because base doughnut doesn't animate.
+        var startRadius = -1.570,// -Math.PI/2
+            segmentAngle = 6.2831,// 1 * ((99.9999/100) * (PI*2)),
+            endRadius = 4.7131,// startRadius + segmentAngle
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,
+          'A', doughnutRadius, doughnutRadius, 0, 1, 1, endX, endY,//Draw outer circle
+          'Z',//Close path
+          'M', startX2, startY2,//Move pointer
+          'A', cutoutRadius, cutoutRadius, 0, 1, 0, endX2, endY2,//Draw inner circle
+          'Z'
+        ];
+        cmd = cmd.join(' ');
+        return cmd;
+    };
+    function pathMouseEnter(e) {
+      var order = $(this).data().order;
+      $tip.text(data[order].title + ": " + data[order].value)
+          .fadeIn(200);
+      settings.onPathEnter.apply($(this),[e,data]);
+    }
+    function pathMouseLeave(e) {
+      $tip.hide();
+      settings.onPathLeave.apply($(this),[e,data]);
+    }
+    function pathMouseMove(e) {
+      $tip.css({
+        top: e.pageY + settings.tipOffsetY,
+        left: e.pageX - $tip.width() / 2 + settings.tipOffsetX
+      });
+    }
+    function drawPieSegments (animationDecimal) {
+      var startRadius = -PI / 2,//-90 degree
+          rotateAnimation = 1;
+      if (settings.animation && settings.animateRotate) rotateAnimation = animationDecimal;//count up between0~1
+
+      drawDoughnutText(animationDecimal, segmentTotal);
+
+      $pathGroup.attr("opacity", animationDecimal);
+
+      //If data have only one value, we draw hollow circle(#1).
+      if (data.length === 1 && (4.7122 < (rotateAnimation * ((data[0].value / segmentTotal) * (PI * 2)) + startRadius))) {
+        $paths[0].attr("d", getHollowCirclePath(doughnutRadius, cutoutRadius));
+        return;
+      }
+      for (var i = 0, len = data.length; i < len; i++) {
+        var segmentAngle = rotateAnimation * ((data[i].value / segmentTotal) * (PI * 2)),
+            endRadius = startRadius + segmentAngle,
+            largeArc = ((endRadius - startRadius) % (PI * 2)) > PI ? 1 : 0,
+            startX = centerX + cos(startRadius) * doughnutRadius,
+            startY = centerY + sin(startRadius) * doughnutRadius,
+            endX2 = centerX + cos(startRadius) * cutoutRadius,
+            endY2 = centerY + sin(startRadius) * cutoutRadius,
+            endX = centerX + cos(endRadius) * doughnutRadius,
+            endY = centerY + sin(endRadius) * doughnutRadius,
+            startX2 = centerX + cos(endRadius) * cutoutRadius,
+            startY2 = centerY + sin(endRadius) * cutoutRadius;
+        var cmd = [
+          'M', startX, startY,//Move pointer
+          'A', doughnutRadius, doughnutRadius, 0, largeArc, 1, endX, endY,//Draw outer arc path
+          'L', startX2, startY2,//Draw line path(this line connects outer and innner arc paths)
+          'A', cutoutRadius, cutoutRadius, 0, largeArc, 0, endX2, endY2,//Draw inner arc path
+          'Z'//Cloth path
+        ];
+        $paths[i].attr("d", cmd.join(' '));
+        startRadius += segmentAngle;
+      }
+    }
+    function drawDoughnutText(animationDecimal, segmentTotal) {
+      $summaryNumber
+        .css({opacity: animationDecimal})
+        .text((segmentTotal * animationDecimal).toFixed(1));
+    }
+    function animateFrame(cnt, drawData) {
+      var easeAdjustedAnimationPercent =(settings.animation)? CapValue(easingFunction(cnt), null, 0) : 1;
+      drawData(easeAdjustedAnimationPercent);
+    }
+    function animationLoop(drawData) {
+      var animFrameAmount = (settings.animation)? 1 / CapValue(settings.animationSteps, Number.MAX_VALUE, 1) : 1,
+          cnt =(settings.animation)? 0 : 1;
+      requestAnimFrame(function() {
+          cnt += animFrameAmount;
+          animateFrame(cnt, drawData);
+          if (cnt <= 1) {
+            requestAnimFrame(arguments.callee);
+          } else {
+            settings.afterDrawed.call($this);
+          }
+      });
+    }
+    function Max(arr) {
+      return Math.max.apply(null, arr);
+    }
+    function Min(arr) {
+      return Math.min.apply(null, arr);
+    }
+    function isNumber(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    function CapValue(valueToCap, maxValue, minValue) {
+      if (isNumber(maxValue) && valueToCap > maxValue) return maxValue;
+      if (isNumber(minValue) && valueToCap < minValue) return minValue;
+      return valueToCap;
+    }
+    return $this;
+  };
+})(jQuery);
+        </script>
+</html>

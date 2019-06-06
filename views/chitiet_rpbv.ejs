@@ -1,0 +1,329 @@
+<html>
+    <head>
+        <title>Báo cáo bài viết</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+  <link rel='stylesheet' href='/css/style.css' />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+<link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+<script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+<script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+
+</head>
+    <body>
+            <nav class="navbar navbar-inverse" style="margin-bottom: 0">
+                    <div class="container-fluid">
+                      <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span> 
+                        </button>
+                        <a class="navbar-brand" href="#">Bảng điều khiển</a>
+                      </div>
+                      <div class="collapse navbar-collapse" id="myNavbar">
+                        <ul class="nav navbar-nav">
+                          
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                          
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                  <h3 style="color:black;font-weight: bold"><i class="fas fa-info-circle" aria-hidden="true" style="background-color: white;color: black"></i> Chi tiết thư báo cáo bài viết</h3>
+                  <div class="container-fluid" style="background-color:burlywood">
+                    <div class="col-md-2">
+                        <div class="form-group" style="margin: 10px 0 0 0">
+                          
+                          </div>
+                          <div class="khung_select" style="margin-top: 50px;">
+                              <a href="/./kdv/<%= IDKDV %>/hopthu"><h5 id="hopthuden"><i class="fas fa-archive"></i>     Hộp thư đến</h5></a>
+                              <a class="thudagui" href="/./kdv/<%= IDKDV %>/thudagui"><h5 id="thudagui"><i class="fa fa-paper-plane"></i>     Thư đã gửi</h5></a>
+                              <a class="thungrac" href="/./kdv/<%= IDKDV %>/thungrac"><h5 id="thungrac"><i class="fa fa-trash"></i>     Thùng rác</h5></a>
+                              <a class="thugansao" href="/./kdv/<%= IDKDV %>/thugansao"><h5 id="thugansao"><i class="fas fa-star"></i>     Thư gắn sao</h5></a>
+                              <a class="thuguiad" href="../<%= IDKDV %>/thuguiad"><h5 id="thuguiad"><i class="fas fa-audio-description"></i>     Thư đã gửi Admin</h5></a>
+                            </div>
+                    </div>
+                    <div class="col-md-10" style="background-color:white">
+                      <div id="test_mucthu">
+                        <div class="tool-box">
+                            <button id="<%= IDKDV %>" class="turn-b" type="button"><i style="font-size:19px" class="fas fa-arrow-left"></i></button>
+                            <% if(RPBV.thungrac == null) { %>
+                            <button id="<%= RPBV.id %>" class="thungrac-rpbv" type="button"><i style="font-size:19px" class="fas fa fa-trash"></i></button>
+                            <% } else { %>
+                                <button id="<%= RPBV.id %>" class="dondep" type="button"><i style="font-size:19px" class="fas fa-recycle"></i></button>
+                                <button id="<%= RPBV.id %>" class="hoantac" type="button"><i style="font-size:19px;" class="fas fa-undo"></i></button>
+                                <% } %>
+                                <% if(RPBV.gansao == null) { %>
+                                    <button id="<%= RPBV.id %>" class="star" type="button"><i style="font-size:19px" class="fas fa-star"></i></button> 
+                                    <% } else { %>
+                                    <button id="<%= RPBV.id %>" class="stared" type="button"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button> 
+                                    <% } %>
+                                    <button class="reply" type="button"><i style="font-size:19px;" class="fas fa-reply"></i></button>
+                                  </div>
+                                </div>
+                                    <div class="title-rpbv" style="width:100%">
+                                      <h5 style="padding: 10px 5px;float: left"><strong><i class="fas fa-user"></i>       <%= RPBV.hoten %>          <i style="font-size:19px;color: crimson" class="fas fa-times"></i>         <i class="fas fa-sticky-note"></i>          <%= BAIVIET.tieude %></strong>
+                                        
+                                      <h6 style="float:right;"><i class="fas fa-clock"></i><%= RPBV.created_at %></h6>
+                                      </h5>
+                                      <h6 style="float:left;width: 100%;margin-left: 30px">-      Tới <i class="fa fa-envelope"></i>             Báo cáo bài viết</h6>
+                                    </div>
+                                    <div class="content-rpbv" style="width: 100%">
+                                      <% if(RPBV.loai_rp == 1) { %>
+                                        <h4><strong>Nội dung không phù hợp</strong></h4>
+                                        <% } else if(RPBV.loai_rp == 2) { %>
+                                          <h4><strong>Hình ảnh không phù hợp</strong></h4>
+                                          <% } %>
+                                          <h6 id="baocao_bv">Đã     <strong>Báo cáo </strong> bài viết  <strong>|    <%= BAIVIET.tieude %>    </strong>  Đăng bởi      <strong><%= BAIVIET.hoten %></strong>    Trong     <strong><%= BAIVIET.ten_cd %></strong></h6>
+                                            <h6 id="chuthich-content">Chú thích thêm:  <strong>   <%= RPBV.chuthich %></strong></h6>
+                                            <div id="img-bcbv" style="background: url('/img/<%= BAIVIET.des_pic %>') repeat bottom; background-size: cover;height: 300px;margin-top: 10px;margin-bottom: 10px"></div>
+                                            <h5 id="tieude-bcbv"><strong><%= BAIVIET.tieude %></strong></h5>
+                                            <h6 id="noidung-bcbv"><%= BAIVIET.noidung %></h6>
+                                            <h6 id="trichdan-bcbv">Trích dẫn:    <%= BAIVIET.trichdan %></h6>
+                                            <h6 id="keyword-bcbv">Keyword: <%= BAIVIET.keyword %></h6>
+                                            <h6 id="xemchitiet"><a target="_blank" rel="noopener noreferrer" href="/./kdv/<%= IDKDV %>/baiviet/<%= BAIVIET.id %>"><i class="fas fa-arrows-alt"></i>      Xem chi tiết bài viết</a></h6>
+                                            <div class="test-rep">
+                                              <h5 class="thutraloi"><strong><i class="fa fa-paper-plane" aria-hidden="true"></i>     -     Thư trả lời</strong></h5>
+                                            <% if(typeof THUREP !== 'undefined' && THUREP.length > 0) { %>
+                                              <% THUREP.forEach(function(data){ %>
+                                              <div id="noidung_test" class="noidung_test">
+                                              <h6 id="nguoigui_thurep"><strong><i class="fas fa-user"></i>      <%= data.hoten %>     <i style="font-size: 15px" class="fas fa-arrow-alt-circle-right"></i>        <i class="fas fa-user"></i>        <%= RPBV.hoten %></strong></h6>
+                                              
+                                                <h6 style="float: left"><strong>-        <i style="font-size: 15px" class="far fa-smile"></i>         <%= data.tieude %></strong></h6>
+                                                <h6 style="float: left; margin-left: 10px">-      <i style="font-size: 15px" class="fas fa-clock"></i>      <%= data.created_at %></h6>
+                                                <% if(IDKDV == data.id_user) { %>
+                                                <button class="xoa-reply-rpbv" id="<%= data.id %>" style="float: right;margin-right:20px " type="button"><i style="font-size: 19px" class="fa fa-trash"></i></button>
+                                                <% } %>
+                                                <button class="xem-reply-rpbv" id="<%= data.id %>" style="float: right; margin-right:20px" type="button"><i style="font-size: 19px" class="fas fa-eye"></i></button>
+                                            </div>
+                                              <% }) %>
+                                              <% } else { %>
+                                                <h6 id="kiemtrarep" style="background-color:cornsilk">Chưa có thư trả lời</h6>
+                                                <% } %>
+                                              </div>
+                                          </div>
+                                    <button class="reply" style="float:left;width: 20%;border-radius: 10px"><i style="font-size:19px;padding: 5px 5px" class="fas fa-reply"></i>          Trả lời</button>
+                                    <div class="testing" style="display:none">
+                                    <form action="/./kdv/<%= IDKDV %>/reply_rpbv/<%= RPBV.id %>" method="POST" enctype="application/x-www-form-urlencoded">
+                                      <!-- <textarea id="test-editor" class="froalar-editor" rows="8" cols="50"></textarea></br> -->
+                                      <div class="fr-view">
+                                      <h6><strong>Tiêu đề</strong></h6>
+                                      <input name="tieude" id="tieude" class="form-control">
+                                      <h6><strong>Nội dung</strong></h6>
+                                      <textarea name="editor_content" id="example" class="froalar-editor"></textarea>
+                                      <button style="margin-top: 20px" type="submit"><i style="font-size:19px" class="fa fa-paper-plane" aria-hidden="true"></i>  Gửi thư</button>
+                                    </div>
+                                    </form>
+                                    </div>
+                                  
+                    </div>
+                    </div>
+                    <input id="idkdv" value="<%= IDKDV %>" hidden>
+                    
+    <script>
+                                                
+// Insert the node names
+// $log.append( "<h3>Node Names:</h3>" );
+// $( "<ol></ol>" )
+//   .append( nodeNames.join( "" ) )
+//   .appendTo( $log );
+
+
+      $(document).on('click','.reply',function(){
+        $('.testing').css('display','block');
+      });
+  
+      var editor = new FroalaEditor('#example',{
+        language: 'vi',
+        toolbarButtons: [['fullscreen', 'bold' , 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', '|','fontFamily', 'fontSize', 'color', 'inlineStyle', 'paragraphStyle', '|', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'outdent', 'indent', 'quote', '-', 'insertLink', 'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'emoticons', 'specialCharacters', 'insertHR', 'selectAll', 'clearFormatting', '|','undo', 'redo', 'html'], ['insert']],
+        imageUploadURL: 'http://localhost:3000/image_upload',
+        imageUploadParams: {
+          id: 'my_editor'
+      },
+      
+      events: {
+        'image.beforeUpload': function (images) {
+          // return false;
+        // Return false if you want to stop the image upload.
+      },
+        'image.uploaded': function (response) {
+        // Image was uploaded to the server.
+        
+        // alert(response);
+        // this.html.insert('testing');
+      },
+      'image.error': function (error, response) {
+        // Bad link.
+        if (error.code == 1) {
+          alert('1');
+         }
+
+        // No link in upload response.
+        else if (error.code == 2) { 
+          alert('2');
+         }
+
+        // Error during image upload.
+        else if (error.code == 3) { alert('3') }
+
+        // Parsing response failed.
+        else if (error.code == 4) { alert('4') }
+
+        // Image too text-large.
+        else if (error.code == 5) { alert('5') }
+
+        // Invalid image type.
+        else if (error.code == 6) { alert('6') }
+
+        // Image can be uploaded only to same domain in IE 8 and IE 9.
+        else if (error.code == 7) { alert('7') }
+
+        // Response contains the original server response to the request if available.
+      },
+    
+      },
+      // Set the file upload URL.
+      fileUploadURL: 'http://localhost:3000/file_upload',
+
+      fileUploadParams: {
+        id: 'my_editor'
+      },
+
+      fileAllowedTypes: ['*'],
+
+
+      // Set the video upload URL.
+      videoUploadURL: 'http://localhost:3000/video_upload',
+      videoUploadParams: {
+        id: 'my_editor'
+      },
+
+      
+      });
+      
+  //     editor.opts.events['image.removed'] = function (e, editor, $img) {
+  //       alert('test');
+  //       $.ajax({
+  //     // Request method.
+  //     method: 'POST',
+
+  //     // Request URL.
+  //     url: 'http://localhost:3000/delete_image',
+
+  //     // Request params.
+  //     data: {
+  //       src: $img.attr('src')
+  //     }
+  //   })
+  //   .done (function (data) {
+  //     alert ('Image was deleted');
+  //   })
+  //   .fail (function (err) {
+  //     alert ('Image delete problem: ' + JSON.stringify(err));
+  //   })
+  // }
+
+    FroalaEditor.DefineIcon('insert', {NAME: 'insert', SVG_KEY: 'add'});
+    FroalaEditor.RegisterCommand('insert', {
+    title: 'Chèn mẫu sẵn',
+    focus: true,
+    undo: true,
+    refreshAfterCallback: true,
+    callback: function () {
+      this.html.insert('<p><img src="/uploads/2b3715ab3c1cbdbbbe8ff6373a0dd430a2b89e5d.gif" style="width: 300px;" class="fr-fic fr-dib"></p><p style="text-align: center;"><strong>Ch&acirc;n th&agrave;nh Cảm ơn bạn đ&atilde; gửi b&aacute;o c&aacute;o b&agrave;i viết cho forum </strong></p><p><br></p><p style="text-align: center;">Forum sẽ cố gắng <strong><em><u>xem x&eacute;t</u></em></strong> v&agrave; thực hiện <strong><em><u>điều chỉnh</u></em></strong>, <strong><em><u>trả lời</u></em></strong> bạn sớm nhất c&oacute; thể ! <span class="fr-emoticon fr-deletable fr-emoticon-img" style="background: url(https://cdnjs.cloudflare.com/ajax/libs/emojione/2.0.1/assets/svg/1f601.svg);">&nbsp;</span> </p><p><br></p><p><span style="font-size: 11px;"><em>H&atilde;y nhớ tu&acirc;n thủ c&aacute;c điều khoản người d&ugrave;ng v&agrave; trở th&agrave;nh 1 nh&acirc;n vật tốt của Forum Coyome nh&eacute; ! </em></span></p>');
+      $('#tieude').val('Cảm ơn bạn đã báo cáo');
+    }
+  });
+
+  $(document).on('click','.turn-b',function(){
+    window.location = "/./kdv/" + this.id + '/hopthu';
+  });
+
+  $(document).on('click','.thungrac-rpbv',function(){
+    var idkv = $('#idkdv').val();
+    var rpid =  $(this).attr("id");
+    // alert(idkv);
+    $.get('/./kdv/ajax/'+idkv+'/thungrac_ctbcbv/'+rpid,function(data){
+  
+})
+  alert('Đã chuyển thư vào thùng rác');
+  window.location = "/./kdv/" + idkv + '/hopthu';
+  });
+
+  $(document).on('click','.star',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/gansao_ctbcbv/'+rpid,function(data){
+    var shown = $('#test_mucthu');
+    shown.html(data);
+  })
+  });
+
+  $(document).on('click','.stared',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/gosao_ctbcbv/'+rpid,function(data){
+    var shown = $('#test_mucthu');
+    shown.html(data);
+  })
+  });
+
+  $(document).on('click','.dondep',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/xoa_ctbcbv/'+rpid,function(data){
+    
+  })
+
+    alert('Đã xóa thư khỏi hệ thống');
+    window.location = "/./kdv/" + idkv + '/hopthu';
+  });
+
+  $(document).on('click','.hoantac',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/hoantac_ctbcbv/'+rpid,function(data){
+    
+  })
+
+    alert('Đã hoàn tác thư');
+    window.location = "/./kdv/" + idkv + '/hopthu';
+  });
+
+  $(document).on('click','.xoa-reply-rpbv',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    $.get('/./kdv/ajax/'+idkv+'/xoareply_rpbv/'+rpid,function(data){
+    
+  })
+
+    alert('Đã xóa thư trả lời');
+    window.location.reload();
+  });
+
+  $(document).on('click','.xem-reply-rpbv',function(){
+    var rpid =  $(this).attr("id");
+    var idkv = $('#idkdv').val();
+    // alert(rpid);
+    
+    window.location = "/./kdv/" + idkv + '/xemreply_rpbv/' + rpid;
+  });
+  
+  
+      </script>  
+  </body>
+</html>

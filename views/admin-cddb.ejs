@@ -1,0 +1,124 @@
+<html>
+    <head>
+        <title>Trang chủ đề Admin</title>
+            <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+      <link rel='stylesheet' href='/css/style.css' />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="/fleditor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/fleditor/js/froala_editor.pkgd.min.js"></script>
+    <link href="/fleditor/css/froala_style.min.css" rel="stylesheet" type="text/css" />    
+    <script type="text/javascript" src="/fleditor/js/languages/vi.js"></script>
+    <script type="text/javascript" src="/fleditor/js/plugins/image.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div id="dieuhuong_admin" class="col-md-2" style="background-color: teal;height: 100%">
+                <h4 style="float:none">Admin Dashboard</h4>
+                <ul>
+                    <li><a id="db_nd" href="/admin/dashboard"><i class="fas fa-user"></i>   Tài khoản người dùng</a></li>
+                    <li><a id="db_bv" href="/admin/baiviet_nd"><i class="fas fa-sticky-note"></i>    Bài viết người dùng</a></li>
+                    <li><a id="db_cd" href="/admin/chude_db"><i class="fas fa-biohazard"></i>    Chủ đề bài viết</a></li>
+                    <li><a href="/admin/phanquyen_db"><i class="fas fa-level-up-alt"></i>    Phân quyền chức vụ</a></li>
+                    <li><a href="/admin/hopthu"><i class="fa fa-envelope"></i>    Hộp thư tiếp nhận</a></li>
+                </ul>
+            </div>
+            <div class="col-md-10">
+                <h5 style="width: 60%"><strong><i style="font-size: 19px" class="fas fa-atom"></i> Trang chủ đề</strong></h5>
+                
+                <% CHUDE.forEach(function(data){ %>
+                <div class="col-sm-4">
+                    <a href="./xemchitiet_chude/<%= data.id %>"><img src="/img/<%= data.wall_pic %>" style="object-fit: cover;width:100%;height:150px"></a>
+                    <div class="content_cd" style="background-color: whitesmoke;padding: 8px 15px">
+                    <h5><strong><%= data.ten_cd %></strong></h5>
+                    <p><i><%= data.mota %></i></p>
+                        <% if(data.trangthai == null) { %>
+                    <p><strong style="font-size: 20px;color:green">&#9679;</strong> <i style="font-size: 12px">Đang hoạt động</i></p>
+                    <% } else { %>
+                        <p><strong style="font-size: 20px;color:red">&#9679;</strong> <i style="font-size: 12px">Đang tạm hoãn</i></p>
+                        <% } %>
+                    </div>
+                    <div class="col-sm-6" style="text-align: center;background-color: red;color: white">
+                        <p style="padding-top: 10px"><strong><i style="font-size: 15px" class="fas fa-sticky-note"></i> Bài viết</strong></p>
+                        <p style="font-size: 20px"><strong><%= data.sobv %></strong></p>
+                    </div>
+                    <div class="col-sm-6" style="text-align: center;background-color: goldenrod;border-left: white 2px solid">
+                        <p style="padding-top: 10px"><strong><i style="font-size: 15px" class="fas fa-user-plus"> </i>Theo dõi</strong></p>
+                        <p style="font-size: 20px"><strong><%= data.folow %></strong></p>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+            <div class="col-md-10">
+                <div id="contenitore">
+                    <div class="left">
+                    <table class="table_chart">
+                    <caption style="text-align: center">Số lượng bài viết trong chủ đề</caption>
+                    <tbody>
+                            <% var bvanime = parseFloat(CDBV.anime); %>
+                            <% var bvhistory = parseFloat(CDBV.history); %>
+                            <% var bvmusic = parseFloat(CDBV.music); %>
+                            <% var tong = parseFloat(CDBV.tong); %>
+                    <tr><td>Anime</td><td><%= Number((bvanime*100/tong).toFixed(1)) %>%</td><td style="background-color:#336699">&nbsp;</td></tr>
+                    <tr><td>History</td><td><%= Number((bvhistory*100/tong).toFixed(1)) %>%</td><td style="background-color:#003366">&nbsp;</td></tr>
+                    <tr><td>Music</td><td><%= Number((bvmusic*100/tong).toFixed(1)) %>%</td><td style="background-color:#ff6600">&nbsp;</td></tr>
+                    </tbody></table>
+                    
+                    </div>
+                    <div class="left">
+                    <div id="grafico">
+                    <div class="riga" style="top:25%"><div>75%</div></div>
+                    <div class="riga" style="top:50%"><div>50%</div></div>
+                    <div class="riga" style="top:75%"><div>25%</div></div>
+                    <div id="col0" style="left:0; background-color:#336699;" class="column"></div>
+                    <div id="col1" style="left:25%; background-color:#003366;" class="column"></div>
+                    <div id="col2" style="left:50%; background-color:#ff6600;" class="column"></div>
+                    <div id="col3" style="left:75%; background-color:#ffcc00;" class="column"></div>
+                    </div>
+                    </div>
+                    <div class="canc"></div>
+                    
+                    </div>
+            </div>
+            <div class="col-md-2" style="background-color: seashell">
+                <h5><strong>Tống kết chủ đề</strong></h5>
+            </div>
+            <div class="col-md-10" style="border-top: sienna 2px solid;margin-top:10px">
+                <h5><strong>Chủ đề được tương tác cao nhất</strong></h5>
+                <% if(bvanime > bvhistory && bvanime > bvmusic) { %>
+                <i style="float: left;font-size: 25px;margin-left: 30px;color: white;background-color: goldenrod;padding: 10px;border-radius: 50%" class="fas fa-crown"></i>
+                <p style="font-size: 24px;margin: 8px 0 0 20px;float: left;"><strong>Anime</strong></p>
+                <% } else if(bvhistory > bvanime && bvhistory > bvmusic) { %>
+                    <i style="float: left;font-size: 25px;margin-left: 30px;color: white;background-color: goldenrod;padding: 10px;border-radius: 50%" class="fas fa-crown"></i>
+                    <p style="font-size: 24px;margin: 8px 0 0 20px;float: left;"><strong>History</strong></p>
+                    <% } else { %>
+                        <i style="float: left;font-size: 25px;margin-left: 30px;color: white;background-color: goldenrod;padding: 10px;border-radius: 50%" class="fas fa-crown"></i>
+                        <p style="font-size: 24px;margin: 8px 0 0 20px;float: left;"><strong>Music</strong></p>
+                        <% } %>
+            </div>
+        </div>
+    </body>
+    <script>
+$(document).ready(function(){
+    $('#db_cd').addClass('selected');
+});
+
+
+
+    function viewGraph(){
+$('.column').css('height','0');
+$('table tr').each(function(index) {
+var ha = $(this).children('td').eq(1).text();
+$('#col'+index).animate({height: ha}, 1500).html("<div>"+ha+"</div>");
+});
+}
+$(document).ready(function(){
+viewGraph();
+});
+    </script>
+</html>

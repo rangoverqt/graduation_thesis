@@ -1,0 +1,323 @@
+<html>
+    <head>
+        <title>moderators</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel='stylesheet' href='/css/style.css' />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/jquery/jquery.paroller.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse" style="margin-bottom: 0">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span> 
+                </button>
+                <a class="navbar-brand" href="#">Coyome Moderators Dashboard</a>
+              </div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                  
+                  <li><a href="<%= CHECK.id %>/hopthu"><i class="fa fa-envelope"></i>    Hộp thư</a></li>  
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div class="jumbotron" style="background: url('/img/<%= XBV.des_pic %>') no-repeat center;
+          background-size: cover; height: 400px; width: 100%;margin-bottom: 0"
+          data-paroller-factor="0.5"
+          data-paroller-factor-xs="0.2">
+          <div class="turnback">
+              <i class="fas fa-arrow-left" style="color:white;padding: 5px"></i>   <a href="/kdv/<%= CHECK.id %>">Turn back</a>
+            </div>
+          <div class="details">
+              <h3 style="color: white;padding: 10px"><i style="color:white" class="fa fa-info-circle" aria-hidden="true"></i>  Chi tiết bài viết</h3>
+              </div>
+                <div class="tieude">
+                  <h4><%= XBV.tieude %></h4>
+                </div>
+        </div>
+          <div class="container" style="-webkit-box-shadow: 0px -7px 54px -4px rgba(0,0,0,0.53);
+          -moz-box-shadow: 0px -7px 54px -4px rgba(0,0,0,0.53);
+          box-shadow: 0px -7px 54px -4px rgba(0,0,0,0.53);background-color: white">
+            <div class="test">
+                <i style="padding:10px 5px 0 0" class="fas fa-sticky-note"></i>
+                <h5>Trong <a href=#><%= XBV.ten_cd %></a></h5>
+                <h5>Được đăng bởi <a href=#><%= XBV.hoten %></a></h5>
+            </div>
+            <div class="time">
+                <h6>Vào lúc <%= XBV.created_at %></h6>
+                <i class="far fa-clock" style="float:right;padding: 8px 5px 0 0"></i>
+            </div>
+              <div class="img-content">
+                <div class="jumbotron" style="background: url('/img/<%= XBV.des_pic %>') repeat bottom; background-size: cover;height: 300px;margin-top: 10px;margin-bottom: 10px"
+                data-paroller-factor="0.3"
+                data-paroller-direction="horizontal"></div>
+      </div>
+      <div class="col-sm-8 content-left">
+        <h6><%= XBV.noidung %></h6>
+      </div>
+      <div class="col-sm-2 content-right" id="getFixed" style="margin-left:0 !important">
+        <h5><i class="fab fa-audible" style="margin-right:5px"></i>Trạng thái bài viết:</h5>
+        <% if(XBV.da_xem == null){ %>
+          <h6>Bài viết chưa được xem qua</h6>
+          <h6><i class="fas fa-exclamation-triangle fa-2x"></i></h6>
+          <% } else if(XBV.da_xem == 1 && XBV.restrict_area == null){  %>
+          <h6 style="border-bottom:black 1px solid;font-weight: bold">Bài viết đã từng được xem nhưng chưa đánh giá</h6>
+          <div class="alert alert-warning">
+              <h5 style="color: black;background-color:white;font-weight:bold;padding: 10px;border-radius: 20px"><i class="fas fa-exclamation-circle" style="color:goldenrod"></i>      Công việc chưa hoàn tất</h5>
+          <h6>Yêu cầu Kiểm duyệt viên hoàn thành việc đánh giá</h6>
+          </div>
+          <% } else { %>
+            <h6 style="border-bottom:black 1px solid;font-weight: bold">Bài viết đã được đánh giá</h6>
+            <% if(XBV.restrict_area == 0){ %>
+                <div class="alert alert-success">
+                  <h6><i style="margin-right:10px;font-size: 25px;" class="fa fa-check"></i>Bài viết được thông qua bởi<a style="margin-left:5px" href="#"><%= KDV.hoten %></a></h6>
+                </div>
+            <% } else { %>
+                <div class="alert alert-danger">
+                  <h6><i style="margin-right:10px;font-size: 25px;" class="fa fa-ban"></i>Bài viết bị từ chối bởi <a style="margin-left:5px" href="#"><%= KDV.hoten %></a></h6>
+                  <h5>Lý do:</h5>
+                  <ul>
+                    <% if(LDD.ld_1 == 1){ %>
+                    <li>Bài viết không phù hợp đề tài</li>
+                    <% } %>
+                    <% if(LDD.ld_2 == 1){ %>
+                      <li>Tiêu đề không phù hợp</li>
+                    <% } %>
+                    <% if(LDD.ld_3 == 1){ %>
+                      <li>Nội dung sai lệch, không hợp lý</li>
+                      <% } %>
+                      <% if(LDD.ld_4 == 1){ %>
+                        <li>Trích dẫn sai nguồn</li>
+                        <% } %>
+                        <% if(LDD.ld_5 == 1){ %>
+                          <li>Keywords sai</li>
+                          <% } %>
+                          <% if(LDD.ld_khac != "undefined"){ %>
+                            <li><%= LDD.ld_khac %></li>
+                            <% } %>
+                  </ul>
+                </div>
+            <% } %>
+          <% } %>
+      </div>
+        <input hidden class="show-btn" type="button" id="show-btn" value="Hiện =">
+        <div class="col-sm-2-right remind" id="remind-fixed">
+            <input class="close-btn" type="button" id="close-btn" value="Ẩn -">
+        <h6><i class="fas fa-bell"></i>Nhắc nhớ chung kiểm duyệt viên:</h6>
+        <ul>
+          <li>Chấm bài trên phương diện công tâm không vì cá nhân</li>
+          <li>Xem kỹ các phần cần đánh giá của bài viết</li>
+          <li>Có trách nhiệm trong việc chấm và nhận trách nhiệm nếu có sự cố</li>
+        </ul>
+      </div>
+      <div class="col-sm-8 infor">
+        <h6 style="font-style:italic"><i class="fas fa-quote-left" style="margin-right:5px"></i>Trích dẫn: <%= XBV.trichdan %></h6>
+        <h6 style="font-style:italic"><i style="margin-right:5px" class="fas fa-tag"></i>Keyword: <%= XBV.keyword %></h6>
+      </div>
+      <div class="col-sm-6" style="border-top:2px green solid" id="approve">
+        <form onsubmit="return confirmfinish();" id="appform" style="position: relative; margin-top: 10px" action="/kdv/<%= CHECK.id %>/duyet_thongqua/<%= XBV.id %>" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="text" value="0" name="txt_approve" hidden>
+            <i style="position: absolute;
+            top: 12px;
+            left: 41%;
+            font-size: 18px;
+            color:white" class="fas fa-check-circle"></i>
+            <input class="btn btn-success" type="submit" name="btn-approve" value="Approve" style="width:100%;padding: 10px 10px;" id="approvebtn">
+        </form>
+      </div>
+      <div class="col-sm-6 confirmapp" id="confirmationDiv" style="display:none; border:1px solid black; padding:10px; width:500px;">
+        <h6 style="font-weight:bold"><i class="fas fa-question" style="font-size:25px;margin-right: 10px"></i>Bạn đồng ý thông qua ?</h6>
+        <h6>Lưu ý thông tin duyệt bài sẽ được lưu lại, và người duyệt bài chịu trách nhiệm về bài được duyệt</h6>
+        <input style="padding:10px;margin-right: 30px;float: right" class="col-sm-2 btn btn-info" type="button" id="noConfirm" value="Hủy bỏ" onclick="document.getElementById('confirmationDiv').style.display='none'; return false;">
+        <input style="padding:10px;margin-right: 30px;float: right" class="col-sm-2 btn btn-primary" type="button" value="Đồng ý" onclick="confirmed = true;document.getElementById('appform').submit();">
+    </div>
+    <div class="col-sm-6 confirmdec" id="confirmationDiv1" style="display:none; border:1px solid black; padding:10px; width:500px;">
+      <h6 style="font-weight:bold"><i class="fas fa-question" style="font-size:25px;margin-right: 10px"></i>Bạn không đồng ý thông qua ?</h6>
+      <h6>Lưu ý thông tin duyệt bài sẽ được lưu lại, và người duyệt bài chịu trách nhiệm về bài được duyệt</h6>
+      <input style="padding:10px;margin-right: 30px;float: right" class="col-sm-2 btn btn-info" type="button" id="noConfirm1" value="Hủy bỏ" onclick="document.getElementById('confirmationDiv1').style.display='none'; return false;">
+      <input style="padding:10px;margin-right: 30px;float: right" class="col-sm-2 btn btn-primary" type="button" value="Đồng ý" onclick="confirmed1 = true;document.getElementById('decform').submit();">
+    </div>
+      <div class="col-sm-6" style="border-top:2px red solid" id="decline">
+        <form onsubmit="return confirmfinish1();" id="decform" style="position: relative;margin-top: 10px" action="/kdv/<%= CHECK.id %>/duyet_tuchoi/<%= XBV.id %>" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="text" value="1" name="txt_decline" hidden>
+            <i style="position: absolute;
+            top: 12px;
+            left: 41.5%;
+            font-size: 18px;
+            color:white" class="fa fa-ban"></i>
+            <input class="btn btn-danger" type="submit" name="btn-decline" value="Decline" style="width:100%;padding: 10px 10px;" id="declinebtn">
+            <div class="picked-decline" id="picked-decline" hidden>
+            <h5 class="title_lydo" hidden id="lydo_dec"><i style="font-size:25px;margin-right: 10px" class="far fa-angry"></i>Chọn lý do từ chối thông qua</h5>
+            <label hidden id="cb_1"><input name="ld_1" type="checkbox" value="1">     Bài viết không phù hợp đề tài</label><br>
+            <label hidden id="cb_2"><input name="ld_2" type="checkbox" value="1">     Tiêu đề không phù hợp</label><br>
+            <label hidden id="cb_3"><input name="ld_3" type="checkbox" value="1">     Nội dung sai lệch, không hợp lý</label><br>
+            <label hidden id="cb_4"><input name="ld_4" type="checkbox" value="1">     Trích dẫn sai nguồn</label><br>
+            <label hidden id="cb_5"><input name="ld_5" type="checkbox" value="1">     Keywords sai</label><br>
+            <label hidden id="cb_6"><input id="cb_text" type="checkbox" value="">      Khác</label><br>
+            <textarea id="text_area" name="ld_khac" rows="5" hidden disabled></textarea>
+            </div>
+          </form>
+      </div>
+      </div>
+      <div class="container">
+      <button class="btn btn-primary scroll-top" data-scroll="up" type="button">
+          <i class="fa fa-chevron-up"></i>
+          </button>
+          <% if(XBV.restrict_area == 0){ %>
+          <input type="text" name="test_danhgia" id="test_danhgia" value="app" hidden>
+            <% } else if (XBV.restrict_area == 1) { %>
+              <input type="text" name="test_danhgia" id="test_danhgia" value="dec" hidden>    
+              <% } %>
+            </div>
+        </body>
+</html>
+<script>
+$('.jumbotron').paroller();
+$(window).scroll(function(){
+      if ($(this).scrollTop() > 700) {
+          $('#getFixed').addClass('fixed');
+      } else {
+          $('#getFixed').removeClass('fixed');
+      }
+  });
+
+  $(window).scroll(function(){
+      if ($(this).scrollTop() > 700) {
+          $('#remind-fixed').addClass('fixed1');
+      } else {
+          $('#remind-fixed').removeClass('fixed1');
+      }
+  });
+
+  $(window).scroll(function(){
+      if ($(this).scrollTop() > 700) {
+          $('#show-btn').addClass('fixed2');
+      } else {
+          $('#show-btn').removeClass('fixed2');
+      }
+  });
+
+  $(document).ready(function () {
+  $(window).scroll(function () {
+    if ($(this).scrollTop() > 200) {
+      $('.scroll-top').fadeIn();
+    } else {
+      $('.scroll-top').fadeOut();
+    }
+  });
+
+  $('.scroll-top').click(function () {
+    $("html, body").animate({
+      scrollTop: 0
+    }, 400);
+      return false;
+  });
+
+});
+
+$(document).ready(function(){
+  var test_danhgia = $('#test_danhgia').val();
+  // alert(test_danhgia);
+  if(test_danhgia == 'app'){
+    $('#approve').hide();
+  }
+  else if(test_danhgia == 'dec'){
+    $('#decline').hide();
+  }
+});
+
+var confirmed = false;
+
+    function confirmfinish(){
+        if(!confirmed){
+            document.getElementById('confirmationDiv').style.display='block';
+            return false;
+        } else {
+            return true;
+            alert('Duyệt bài hoàn tất');
+        }
+    }
+
+var confirmed1 = false;
+
+function confirmfinish1(){
+    if(!confirmed){
+        document.getElementById('confirmationDiv1').style.display='block';
+        return false;
+    } else {
+      alert('Duyệt bài hoàn tất');
+        return true;
+    }
+}
+
+$(document).ready(function(){
+  $('#approvebtn').click(function(){
+    $('#decline').hide();
+  });
+  $('#noConfirm').click(function(){
+    $('#decline').show();
+  });
+});
+
+$(document).ready(function(){
+  $('#declinebtn').click(function(){
+    $('#approve').hide();
+    $('#lydo_dec').show();
+    $('#cb_1').show();
+    $('#cb_2').show();
+    $('#cb_3').show();
+    $('#cb_4').show();
+    $('#cb_5').show();
+    $('#cb_6').show();
+    $('#text_area').show();
+    $('#picked-decline').show();
+    $('#cb_text').change(function(){
+    if($('#cb_text').is(':checked') == true){
+      $('#text_area').prop('disabled', false);
+    }
+    else{
+      $('#text_area').prop('disabled', true);;
+    }
+  });
+  });
+  $('#noConfirm1').click(function(){
+    $('#approve').show();
+    $('#lydo_dec').hide();
+    $('#cb_1').hide();
+    $('#cb_2').hide();
+    $('#cb_3').hide();
+    $('#cb_4').hide();
+    $('#cb_5').hide();
+    $('#cb_6').hide();
+    $('#text_area').hide();
+    $('#picked-decline').hide();
+  });
+});
+
+$(document).ready(function(){
+  $('#close-btn').click(function(){
+    $('#remind-fixed').hide();
+    $('#show-btn').show();
+  });
+});
+
+
+$(document).ready(function(){
+  $('#show-btn').click(function(){
+    $('#remind-fixed').show();
+    $('#show-btn').hide();
+  });
+});
+</script>

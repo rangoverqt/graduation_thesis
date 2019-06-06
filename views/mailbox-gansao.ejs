@@ -1,0 +1,299 @@
+<html>
+    <head>
+        <title>Thư gắn sao</title>
+        <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css">
+  <link rel='stylesheet' href='/css/style.css' />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse" style="margin-bottom: 0">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span> 
+                </button>
+                <a class="navbar-brand" href="#">Coyome Moderators Dashboard</a>
+              </div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="/./kdv/<%= CHECK.id %>"><i class="fas fa-pencil-alt"></i>    Bài viết</a></li> 
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <h3 style="color:black;font-weight: bold"><i class="fas fa-balance-scale fa-border" aria-hidden="true" style="background-color: white;color: black"></i> Hộp thư tiếp nhận</h3>
+          <div class="container-fluid" style="background-color:burlywood">
+            <div class="col-md-2">
+                  <div class="khung_select" style="margin-top: 50px;">
+                      <a href="../<%= CHECK.id %>/hopthu"><h5 id="hopthuden"><i class="fas fa-archive"></i>     Hộp thư đến</h5></a>
+                      <a class="thudagui" href="../<%= CHECK.id %>/thudagui"><h5 id="thudagui"><i class="fa fa-paper-plane"></i>     Thư đã gửi</h5></a>
+                      <a class="thungrac" href="../<%= CHECK.id %>/thungrac"><h5 id="thungrac"><i class="fa fa-trash"></i>     Thùng rác</h5></a>
+                      <a class="thugansao" href="../<%= CHECK.id %>/thugansao"><h5 id="thugansao"><i class="fas fa-star"></i>     Thư gắn sao</h5></a>
+                      <a class="thuguiad" href="../<%= CHECK.id %>/thuguiad"><h5 id="thuguiad"><i class="fas fa-audio-description"></i>     Thư đã gửi Admin</h5></a>
+                    </div>
+            </div>
+            <div class="col-md-10" style="background-color:darkgrey">
+            <h4><i class="fas fa-inbox"></i>        Hộp thư gắn sao</h4>
+            <div style="overflow:scroll;height:500px;width:100%;overflow:auto">
+                <div class="container" style="width: 100%; border: black solid 1px;">
+                    <table class="table table-hover" style="background-color: lightyellow">
+                        <h5><strong>Báo cáo bài viết</strong></h5>
+                        <tbody id="test_mucthu">
+                            <% RPBV.rows.forEach(function(rpbv){ %>
+                              <% if(rpbv.da_xem == null) { %>
+                                <tr id="chua_xem" class="table-row" data-href='#'>
+                                  
+                                <td class="col-sm-1"><strong><i class="fas fa-user"></i>       <%= rpbv.hoten %></strong></td>
+
+                                <% if(rpbv.loai_rp == 1) { %>
+                                  <td class="col-sm-3"><strong>Nội dung không phù hợp</strong></td>
+                                  <% } else if(rpbv.loai_rp == 2){ %>
+                                    <td class="col-sm-3"><strong>Hình ảnh không phù hợp</strong></td>
+                                    <% } %>
+                                  <td>-</td>
+                                <td><%= rpbv.chuthich.substring(0, 50) %>...</td>
+                                <td>-</td>
+                                <td><%= rpbv.created_at %></td>
+                                <td><i class="fa fa-envelope" style="font-size:20px"></i></td>
+                                <td class="button"><button type="button" class="trash-rpbv-gansao" id='<%= rpbv.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                
+                                  <td class="button"><button type="button" class="stared-rpbv" id="<%= rpbv.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                  <td class="button"><button id="<%= rpbv.id %>" type="button" class="xem-rpbv"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>  
+                                </tr>
+                                <% } %>
+                                <% if(rpbv.da_xem != null) { %>
+                                  <tr id="da_xem" class="table-row" data-href='#'>
+                                  
+                                      <td class="col-sm-1"><i class="fas fa-user"></i>       <%= rpbv.hoten %></td>
+      
+                                      <% if(rpbv.loai_rp == 1) { %>
+                                        <td class="col-sm-3">Nội dung không phù hợp</td>
+                                        <% } else if(rpbv.loai_rp == 2){ %>
+                                          <td class="col-sm-3">Hình ảnh không phù hợp</td>
+                                          <% } %>
+                                        <td>-</td>
+                                      <td><%= rpbv.chuthich.substring(0, 50) %>...</td>
+                                      <td>-</td>
+                                      <td><%= rpbv.created_at %></td>
+                                      <td><i class="fa fa-envelope-open" style="font-size:20px"></i></td>
+                                      <td class="button"><button type="button" class="trash-rpbv-gansao" id='<%= rpbv.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                      
+                                          <td class="button"><button type="button" class="stared-rpbv" id="<%= rpbv.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                          <td class="button"><button id="<%= rpbv.id %>" type="button" class="xem-rpbv"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>    
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container" style="width: 100%; border: black solid 1px;">
+                    <table class="table table-hover" style="background-color: lightyellow">
+                        <h5><strong>Báo cáo người dùng</strong></h5>
+                        <tbody id="test_mucthu">
+                            <% RPND.rows.forEach(function(rpnd){ %>
+                              <% if(rpnd.da_xem == null) { %>
+                                <tr id="chua_xem" class="table-row" data-href='#'>
+                                  
+                                <td class="col-sm-1"><strong><i class="fas fa-user"></i>       <%= rpnd.user_rp %></strong></td>
+                                <td><i class="fas fa-ban"></i>       <%= rpnd.user_birp %></td>
+                                <% if(rpnd.loai_rp == 1) { %>
+                                    <td class="col-sm-3"><strong>Lời lẽ thô tục, kích động người khác</strong></td>
+                                  <% } else if(rpnd.loai_rp == 2){ %>
+                                    <td class="col-sm-3"><strong>Truyền tải thông tin sai lệch, không chính xác</strong></td>
+                                    <% } else if(rpnd.loai_rp == 3){ %>
+                                        <td class="col-sm-3"><strong>SPAM</strong></td>
+                                  <% } %>
+                                <td><%= rpnd.chuthich.substring(0, 50) %>...</td>
+                                <td>-</td>
+                                <td><%= rpnd.created_at %></td>
+                                <td><i class="fa fa-envelope" style="font-size:20px"></i></td>
+                                <td class="button"><button type="button" class="trash-rpnd-gansao" id='<%= rpnd.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                
+                                  <td class="button"><button type="button" class="stared-rpnd" id="<%= rpnd.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                  <td class="button"><button id="<%= rpnd.id %>" type="button" class="xem-rpnd"><i style="font-size:19px;" class="fas fa-eye"></i></button></td>  
+                                </tr>
+                                <% } %>
+                                <% if(rpnd.da_xem != null) { %>
+                                  <tr id="da_xem" class="table-row" data-href='#'>
+                                  
+                                      <td class="col-sm-1"><i class="fas fa-user"></i>       <%= rpnd.user_rp %></td>
+                                      <td><i class="fas fa-ban"></i>       <%= rpnd.user_birp %></td>
+                                      <% if(rpnd.loai_rp == 1) { %>
+                                        <td class="col-sm-3"><strong>Lời lẽ thô tục, kích động người khác</strong></td>
+                                      <% } else if(rpnd.loai_rp == 2){ %>
+                                        <td class="col-sm-3"><strong>Truyền tải thông tin sai lệch, không chính xác</strong></td>
+                                        <% } else if(rpnd.loai_rp == 3){ %>
+                                            <td class="col-sm-3"><strong>SPAM</strong></td>
+                                      <% } %>
+                                      <td><%= rpnd.chuthich.substring(0, 50) %>...</td>
+                                      <td>-</td>
+                                      <td><%= rpnd.created_at %></td>
+                                      <td><i class="fa fa-envelope-open" style="font-size:20px"></i></td>
+                                      <td class="button"><button type="button" class="trash-rpnd-gansao" id='<%= rpnd.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                      
+                                          <td class="button"><button type="button" class="stared-rpnd" id="<%= rpnd.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                          <td class="button"><button id="<%= rpnd.id %>" type="button" class="xem-rpnd"><i style="font-size:19px;" class="fas fa-eye"></i></button></td> 
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container" style="width: 100%; border: black solid 1px;">
+                    <table class="table table-hover" style="background-color: lightyellow">
+                        <h5><strong>Yêu cầu</strong></h5>
+                        <tbody id="test_mucthu">
+                            <% RQ.rows.forEach(function(rq){ %>
+                              <% if(rq.da_xem == null) { %>
+                                <tr id="chua_xem" class="table-row" data-href='#'>
+                                  
+                                <td class="col-sm-1"><strong><i class="fas fa-user"></i>       <%= rq.hoten %></strong></td>
+
+                                <% if(rq.loai_rq == 1) { %>
+                                    <td class="col-sm-3"><strong>Hỗ trợ tài khoản</strong></td>
+                                  <% } else if(rq.loai_rq == 2){ %>
+                                    <td class="col-sm-3"><strong>Góp ý, yêu cầu chủ đề</strong></td>
+                                    <% } else if(rq.loai_rq == 3){ %>
+                                        <td class="col-sm-3"><strong>Xem xét tham gia đội ngũ Coyome</strong></td>
+                                        <% } %>
+                                <td><%= rq.noidung.substring(0, 50) %>...</td>
+                                <td>-</td>
+                                <td><%= rq.created_at %></td>
+                                <td><i class="fa fa-envelope" style="font-size:20px"></i></td>
+                                <td class="button"><button type="button" class="trash-rq-gansao" id='<%= rq.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                
+                                  <td class="button"><button type="button" class="stared-rq" id="<%= rq.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                  <td class="button"><button id="<%= rq.id %>" type="button" class="xem-rq"><i style="font-size:19px;" class="fas fa-eye"></i></button></td> 
+                                </tr>
+                                <% } %>
+                                <% if(rq.da_xem != null) { %>
+                                  <tr id="da_xem" class="table-row" data-href='#'>
+                                  
+                                      <td class="col-sm-1"><i class="fas fa-user"></i>       <%= rq.hoten %></td>
+      
+                                      <% if(rq.loai_rq == 1) { %>
+                                        <td class="col-sm-3"><strong>Hỗ trợ tài khoản</strong></td>
+                                      <% } else if(rq.loai_rq == 2){ %>
+                                        <td class="col-sm-3"><strong>Góp ý, yêu cầu chủ đề</strong></td>
+                                        <% } else if(rq.loai_rq == 3){ %>
+                                            <td class="col-sm-3"><strong>Xem xét tham gia đội ngũ Coyome</strong></td>
+                                            <% } %>
+                                      <td><%= rq.noidung.substring(0, 50) %>...</td>
+                                      <td>-</td>
+                                      <td><%= rq.created_at %></td>
+                                      <td><i class="fa fa-envelope-open" style="font-size:20px"></i></td>
+                                      <td class="button"><button type="button" class="trash-rq-gansao" id='<%= rq.id %>'><i style="font-size:19px" class="fa fa-trash"></i></button></td>
+                                      
+                                          <td class="button"><button type="button" class="stared-rq" id="<%= rq.id %>"><i style="font-size:19px;color: yellow" class="fas fa-star"></i></button></td>
+                                          <td class="button"><button id="<%= rq.id %>" type="button" class="xem-rq"><i style="font-size:19px;" class="fas fa-eye"></i></button></td> 
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+          </div>
+          <input value="<%= CHECK.id %>" hidden id="idkdv">
+    </body>
+    <script>
+      $(document).on('click', '.xem-rpbv', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val(); 
+  window.location = '../'+idkv+'/bcbv/'+rpid+'';
+});
+
+$(document).on('click', '.xem-rpnd', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val(); 
+  window.location = '../'+idkv+'/bcnd/'+rpid+'';
+});
+
+$(document).on('click', '.xem-rq', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val(); 
+  window.location = '../'+idkv+'/yc/'+rpid+'';
+});
+
+$(document).on('click', '.stared-rpbv', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  $.get('../ajax/'+idkv+'/gosao_rpbv_gansao/'+rpid,function(data){
+ 
+    
+  })
+  
+  window.location.reload();
+});
+
+$(document).on('click', '.stared-rpnd', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  $.get('../ajax/'+idkv+'/gosao_rpnd_gansao/'+rpid,function(data){
+
+    
+  })
+  
+  window.location.reload();
+});
+
+
+$(document).on('click', '.stared-rq', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  $.get('../ajax/'+idkv+'/gosao_rq_gansao/'+rpid,function(data){
+
+    
+})
+
+window.location.reload();
+});
+
+$(document).ready(function(){
+    $('#thugansao').addClass('active');
+});
+
+$(document).on('click', '.trash-rpbv-gansao', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  // alert('rpid');
+  $.get('../ajax/'+idkv+'/thungrac_rpbv_thugansao/'+rpid,function(data){
+   
+  })
+
+  window.location.reload();
+});
+
+$(document).on('click', '.trash-rpnd-gansao', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  $.get('../ajax/'+idkv+'/thungrac_rpnd_thugansao/'+rpid,function(data){
+    
+  })
+
+  window.location.reload();
+});
+
+$(document).on('click', '.trash-rq-gansao', function(){
+  var rpid =  $(this).attr("id");
+  var idkv = $('#idkdv').val();
+  $.get('../ajax/'+idkv+'/thungrac_rq_thugansao/'+rpid,function(data){
+    
+  })
+
+  window.location.reload();
+});
+    </script>
+</html>
